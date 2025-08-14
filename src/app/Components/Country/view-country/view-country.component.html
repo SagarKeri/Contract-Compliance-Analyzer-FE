@@ -1,0 +1,23 @@
+<div class="container mt-4" *ngIf="!isLoading && country">
+  <div class="card shadow-sm">
+    <div class="card-header bg-secondary text-white">
+      <h5 class="mb-0">Country Details</h5>
+    </div>
+    <div class="card-body">
+      <div class="mb-3">
+        <label class="form-label fw-bold">Country Name:</label>
+        <p class="form-control-plaintext">{{ country.country_name }}</p>
+      </div>
+
+      <button type="button" class="btn btn-secondary" (click)="goBack()">
+        <i class="bi bi-arrow-left"></i> Back to List
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="text-center mt-4" *ngIf="isLoading">
+  <div class="spinner-border text-secondary" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>

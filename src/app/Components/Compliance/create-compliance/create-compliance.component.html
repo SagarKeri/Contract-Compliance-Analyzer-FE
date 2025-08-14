@@ -1,0 +1,49 @@
+<div class="container mt-4">
+  <div class="card shadow-sm">
+    <div class="card-header bg-secondary text-white">
+      <h5 class="mb-0">Add Compliance</h5>
+    </div>
+    <div class="card-body">
+      <form (ngSubmit)="addCompliance()">
+        <!-- Compliance Name -->
+        <div class="mb-3">
+          <label for="complianceName" class="form-label">Compliance Name</label>
+          <input
+            type="text"
+            id="complianceName"
+            class="form-control"
+            [(ngModel)]="complianceName"
+            name="complianceName"
+            placeholder="Enter compliance name"
+            required
+          />
+        </div>
+
+        <!-- Domain Dropdown -->
+        <div class="mb-3">
+          <label for="domainSelect" class="form-label">Select Domain</label>
+          <select
+            id="domainSelect"
+            class="form-select"
+            [(ngModel)]="selectedDomainId"
+            name="selectedDomainId"
+            required
+          >
+            <option [ngValue]="null">-- Select Domain --</option>
+            <option *ngFor="let domain of domains" [value]="domain._id">
+              {{ domain.domain_name }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Buttons -->
+        <button type="button" class="btn btn-secondary me-2" (click)="goBack()">
+          <i class="bi bi-arrow-left"></i> Back to List
+        </button>
+        <button type="submit" class="btn btn-success" [disabled]="!complianceName.trim() || !selectedDomainId || isSubmitting">
+          Add Compliance
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

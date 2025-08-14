@@ -1,0 +1,69 @@
+<div class="container mt-4" *ngIf="!isLoading">
+  <div class="card shadow-sm">
+    <div class="card-header bg-secondary text-white">
+      <h5 class="mb-0 text-center">Edit Clause</h5>
+    </div>
+    <div class="card-body">
+      <form (ngSubmit)="updateClause()">
+        <!-- Clause Name -->
+        <div class="mb-3">
+          <label for="clauseName" class="form-label">Clause Name</label>
+          <input
+            type="text"
+            id="clauseName"
+            class="form-control"
+            [(ngModel)]="clauseName"
+            name="clauseName"
+            placeholder="Enter clause name"
+            required
+          />
+        </div>
+
+        <!-- Clause Text -->
+        <div class="mb-3">
+          <label for="clauseText" class="form-label">Clause Text</label>
+          <textarea
+            id="clauseText"
+            class="form-control"
+            rows="4"
+            [(ngModel)]="clauseText"
+            name="clauseText"
+            placeholder="Enter clause text"
+            required
+          ></textarea>
+        </div>
+
+        <!-- Domain Dropdown -->
+        <div class="mb-3">
+          <label for="domainSelect" class="form-label">Select Domain</label>
+          <select
+            id="domainSelect"
+            class="form-select"
+            [(ngModel)]="selectedDomainId"
+            name="selectedDomainId"
+            required
+          >
+            <option [ngValue]="null">-- Select Domain --</option>
+            <option *ngFor="let domain of domains" [value]="domain._id">
+              {{ domain.domain_name }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Buttons -->
+        <button type="button" class="btn btn-secondary me-2" (click)="goBack()">
+          <i class="bi bi-arrow-left"></i> Back
+        </button>
+        <button type="submit" class="btn btn-primary" >
+          Update Clause
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="text-center mt-4" *ngIf="isLoading">
+  <div class="spinner-border text-secondary" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>

@@ -1,0 +1,411 @@
+<div class="container-fluid mt-2 px-2 mb-4">
+  <!-- Before File Upload: Centered Card -->
+  <div *ngIf="!fileUploaded" class="d-flex justify-content-center">
+    <div class="card shadow-lg p-4 w-100" style="max-width: 600px">
+      <div class="row g-3 align-items-center">
+        <!-- File Upload -->
+        <div class="col-12">
+          <label for="contractUpload" class="btn btn-outline-primary w-100"
+            >Upload Contract</label
+          >
+          <input
+            type="file"
+            id="contractUpload"
+            (change)="onFileSelected($event)"
+            accept="application/pdf"
+            hidden
+          />
+          <div *ngIf="fileName" class="mt-2 text-secondary fw-bold small">
+            Selected File: {{ fileName }}
+          </div>
+        </div>
+
+        <!-- Model Selection -->
+        <div class="col-12">
+          <label for="modelSelect" class="form-label fw-bold text-secondary"
+            >Select Model</label
+          >
+          <select
+            id="modelSelect"
+            class="form-select"
+            [(ngModel)]="selectedModel"
+            (change)="onModelChange($event)"
+          >
+            <option [value]="1">Mistral</option>
+            <option [value]="2">Gemini-2.5-pro</option>
+          </select>
+        </div>
+
+        <!-- Country Selection -->
+        <div class="col-12">
+          <label for="countrySelect" class="form-label fw-bold text-secondary"
+            >Select Country</label
+          >
+          <select
+            id="countrySelect"
+            class="form-select"
+            [(ngModel)]="selectedCountry"
+            (change)="onCountryChange($event)"
+          >
+            <option [value]="null">-- Select Country --</option>
+            <option *ngFor="let country of countries" [value]="country._id">
+              {{ country.country_name }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Domain Selection -->
+        <div class="col-12" *ngIf="domains.length > 0">
+          <label for="domainSelect" class="form-label fw-bold text-secondary"
+            >Select Domain</label
+          >
+          <select
+            id="domainSelect"
+            class="form-select"
+            [(ngModel)]="selectedDomain"
+            (change)="onDomainChange($event)"
+          >
+            <option [value]="null">-- Select Domain --</option>
+            <option *ngFor="let domain of domains" [value]="domain._id">
+              {{ domain.domain_name }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Clauses Checklist -->
+        <div class="col-12 mt-3" *ngIf="clauses.length > 0">
+          <label class="form-label fw-bold text-secondary"
+            >Select Clauses</label
+          >
+          <div class="form-check form-check-capsule" *ngFor="let clause of clauses">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            [id]="'clause' + clause._id"
+            (change)="onClauseChange(clause._id, $event)"
+          />
+          <label class="form-check-label" [for]="'clause' + clause._id">
+            {{ clause.clause_name }}
+          </label>
+        </div>
+
+        </div>
+
+        <!-- Analyze Button -->
+        <div class="col-12">
+          <button
+            class="btn btn-primary w-100"
+            [disabled]="!fileName"
+            (click)="analyzeContract()"
+          >
+            Analyze
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- After File Upload: 3-Column Layout -->
+  <div *ngIf="fileUploaded" class="row gx-3">
+    <!-- Column 1: Selection Pane -->
+    <div class="col-md-3">
+      <div class="card shadow-lg p-4 mb-3">
+        <div class="row g-3 align-items-center">
+          <!-- Reuse same card content as above -->
+          <ng-container *ngTemplateOutlet="selectionCard"></ng-container>
+        </div>
+      </div>
+    </div>
+
+    <!-- Column 2: Analysis Results -->
+    <div class="col-md-5">
+      <div class="accordion" id="analysisAccordion">
+        <div class="accordion-item shadow-lg">
+          <h2 class="accordion-header" id="headingAnalysis">
+            <button
+              class="accordion-button text-secondary fw-bold"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#collapseAnalysis"
+              aria-expanded="true"
+              aria-controls="collapseAnalysis"
+            >
+              Compliance Analysis Results
+            </button>
+          </h2>
+          <div
+            id="collapseAnalysis"
+            class="accordion-collapse collapse show"
+            aria-labelledby="headingAnalysis"
+            data-bs-parent="#analysisAccordion"
+          >
+            <div
+              class="accordion-body p-0"
+              style="height: 80vh; display: flex; flex-direction: column"
+            >
+              <!-- Tabs Navigation -->
+              <ul class="nav nav-tabs" id="analysisTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                  <button
+                    class="nav-link text-primary active"
+                    id="response-tab"
+                    data-bs-toggle="tab"
+                    data-bs-target="#response"
+                    type="button"
+                    role="tab"
+                    aria-controls="response"
+                    aria-selected="true"
+                  >
+                    Response
+                  </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button
+                    class="text-primary nav-link"
+                    id="contract-genie-tab"
+                    data-bs-toggle="tab"
+                    data-bs-target="#contract-genie"
+                    type="button"
+                    role="tab"
+                    aria-controls="contract-genie"
+                    aria-selected="false"
+                  >
+                    Contract Genie
+                  </button>
+                </li>
+              </ul>
+
+              <!-- Tabs Content -->
+              <div
+                class="tab-content flex-grow-1 overflow-auto p-3"
+                id="analysisTabContent"
+              >
+                <!-- Response Tab -->
+                <div
+                  class="tab-pane fade show active"
+                  id="response"
+                  role="tabpanel"
+                  aria-labelledby="response-tab"
+                >
+                  <div *ngIf="analysisResult.length === 0" class="text-muted">
+                    No issues found or no file analyzed yet.
+                  </div>
+                  <div
+                    *ngFor="let item of analysisResult"
+                    class="card mb-3 shadow-sm"
+                  >
+                    <div class="card-body">
+                      <h6 class="card-title text-primary">
+                        {{ item.compliance_area }}
+                      </h6>
+                      <p class="mb-1">
+                        <strong>Status:</strong> {{ item.missing_clause }}
+                      </p>
+                      <p *ngIf="item.extracted_text">
+                        <strong>Extracted Clause:</strong><br />
+                        <span class="text-muted">{{
+                          item.extracted_text
+                        }}</span>
+                        <button
+                          class="btn btn-sm btn-link text-primary ms-2"
+                          (click)="highlightTextt(item.extracted_text)"
+                        >
+                          Jump in Pdf
+                          <i class="bi bi-arrow-up-right-square"></i>
+                        </button>
+                      </p>
+                      <p *ngIf="!item.extracted_text" class="text-danger small">
+                        Clause not found in the contract.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Contract Genie Tab (Empty) -->
+                <div
+                  class="tab-pane fade"
+                  id="contract-genie"
+                  role="tabpanel"
+                  aria-labelledby="contract-genie-tab"
+                >
+                  <app-contract-genie></app-contract-genie>
+                </div>
+              </div>
+
+              <!-- Feedback Section -->
+              <div
+                *ngIf="analysisResult.length > 0"
+                class="text-center rounded py-3 border-top bg-white"
+              >
+                <p class="fw-bold text-secondary mb-2">
+                  Was this analysis helpful?
+                </p>
+                <button
+                  class="btn btn-outline-success btn-sm me-2"
+                  (click)="submitFeedback('like')"
+                  [disabled]="feedbackSubmitted"
+                >
+                  <i class="bi bi-hand-thumbs-up"></i> Like
+                </button>
+                <button
+                  class="btn btn-outline-danger btn-sm"
+                  (click)="submitFeedback('dislike')"
+                  [disabled]="feedbackSubmitted"
+                >
+                  <i class="bi bi-hand-thumbs-down"></i> Dislike
+                </button>
+                <div *ngIf="feedbackSubmitted" class="text-success mt-2 small">
+                  Thank you for your feedback!
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Column 3: PDF Viewer -->
+    <div class="col-md-4">
+      <div class="accordion" id="pdfAccordion">
+        <div class="accordion-item shadow-lg">
+          <h2 class="accordion-header" id="headingPdf">
+            <button
+              class="accordion-button text-secondary fw-bold"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#collapsePdf"
+              aria-expanded="true"
+              aria-controls="collapsePdf"
+            >
+              Contract PDF Viewer
+            </button>
+          </h2>
+          <div
+            id="collapsePdf"
+            class="accordion-collapse collapse show"
+            aria-labelledby="headingPdf"
+            data-bs-parent="#pdfAccordion"
+          >
+            <div class="accordion-body overflow-hidden" style="height: 80vh">
+              <ngx-extended-pdf-viewer
+                [src]="pdfSrc"
+                [textLayer]="true"
+                [showHandToolButton]="true"
+                [showDownloadButton]="false"
+                [showPrintButton]="false"
+                [showFindButton]="true"
+                height="100%"
+                (pdfLoaded)="loadComplete($event)"
+                (pageRendered)="pageRendered($event)"
+                (updateFindMatchesCount)="updateFindMatchesCount($event)"
+                (updateFindState)="updateFindState($event)"
+              ></ngx-extended-pdf-viewer>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <p *ngIf="errorMessage" class="text-danger mt-3">{{ errorMessage }}</p>
+
+  <!-- Selection Card Template -->
+  <ng-template #selectionCard>
+    <!-- Place the same selection/upload card content here -->
+    <div class="col-12">
+      <label for="contractUpload" class="btn btn-outline-primary w-100"
+        >Upload Contract</label
+      >
+      <input
+        type="file"
+        id="contractUpload"
+        (change)="onFileSelected($event)"
+        accept="application/pdf"
+        hidden
+      />
+      <div *ngIf="fileName" class="mt-2 text-secondary fw-bold small">
+        Selected File: {{ fileName }}
+      </div>
+    </div>
+    <!-- Model Selection -->
+    <div class="col-12">
+      <label for="modelSelect" class="form-label fw-bold text-secondary"
+        >Select Model</label
+      >
+      <select
+        id="modelSelect"
+        class="form-select"
+        [(ngModel)]="selectedModel"
+        (change)="onModelChange($event)"
+      >
+        <option [value]="1">Mistral</option>
+        <option [value]="2">Gemini-2.5-pro</option>
+      </select>
+    </div>
+
+    <!-- Country Selection -->
+    <div class="col-12">
+      <label for="countrySelect" class="form-label fw-bold text-secondary"
+        >Select Country</label
+      >
+      <select
+        id="countrySelect"
+        class="form-select"
+        [(ngModel)]="selectedCountry"
+        (change)="onCountryChange($event)"
+      >
+        <option [value]="null">-- Select Country --</option>
+        <option *ngFor="let country of countries" [value]="country._id">
+          {{ country.country_name }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Domain Selection -->
+    <div class="col-12" *ngIf="domains.length > 0">
+      <label for="domainSelect" class="form-label fw-bold text-secondary"
+        >Select Domain</label
+      >
+      <select
+        id="domainSelect"
+        class="form-select"
+        [(ngModel)]="selectedDomain"
+        (change)="onDomainChange($event)"
+      >
+        <option [value]="null">-- Select Domain --</option>
+        <option *ngFor="let domain of domains" [value]="domain._id">
+          {{ domain.domain_name }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Clauses Checklist -->
+    <div class="col-12 mt-3" *ngIf="clauses.length > 0">
+      <label class="form-label fw-bold text-secondary">Select Clauses</label>
+      <div class="form-check" *ngFor="let clause of clauses">
+      <input
+        class="form-check-input"
+        type="checkbox"
+        [id]="'clause' + clause._id"
+        [(ngModel)]="clause.selected"
+        (change)="onClauseChange(clause._id, $event)"
+      />
+      <label class="form-check-label" [for]="'clause' + clause._id">
+        {{ clause.clause_name }}
+      </label>
+    </div>
+    </div>
+
+    <!-- Analyze Button -->
+    <div class="col-12">
+      <button
+        class="btn btn-primary w-100"
+        [disabled]="!fileName"
+        (click)="analyzeContract()"
+      >
+        Analyze
+      </button>
+    </div>
+  </ng-template>
+</div>

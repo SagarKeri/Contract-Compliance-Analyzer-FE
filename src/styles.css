@@ -1,0 +1,92 @@
+/* You can add global styles to this file, and also import other style files */
+/* Primary Button (Solid) */
+.btn-primary {
+  background-color: #299e66 !important;
+  border-color: #299e66 !important;
+  color: #fff !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: #247e55 !important;
+  border-color: #247e55 !important;
+}
+
+/* Secondary Button (Solid) */
+.btn-secondary {
+  background-color: #0f6368 !important;
+  border-color: #0f6368 !important;
+  color: #fff !important;
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus {
+  background-color: #08414e !important;
+  border-color: #08414e !important;
+}
+
+/* Primary Button (Outline) */
+.btn-outline-primary {
+  color: #299e66 !important;
+  border-color: #299e66 !important;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+  background-color: #299e66 !important;
+  color: #fff !important;
+  border-color: #299e66 !important;
+}
+
+/* Secondary Button (Outline) */
+.btn-outline-secondary {
+  color: #0f6368 !important;
+  border-color: #0f6368 !important;
+}
+
+.btn-outline-secondary:hover,
+.btn-outline-secondary:focus {
+  background-color: #0f6368 !important;
+  color: #fff !important;
+  border-color: #0f6368 !important;
+}
+
+/* Override Bootstrap text color utilities */
+.text-primary {
+  color: #299e66 !important; /* Your custom primary green */
+}
+
+.text-secondary {
+  color: #0f6368 !important; /* Your custom secondary teal */
+}
+
+.bg-primary {
+  background-color: #299e66 !important;
+}
+
+.bg-secondary {
+  background-color: #0f6368 !important;
+}
+
+.border-primary {
+  border-bottom-color: #0f6368 !important;
+}
+
+::ng-deep .textLayer .highlight {
+  background-color: yellow !important;
+  color: black !important;
+  padding: 1px;
+  border-radius: 2px;
+}
+
+::ng-deep .textLayer .highlight.selected {
+  background-color: orange !important;
+}
+
+ngx-extended-pdf-viewer .textLayer .highlight.selected {
+  opacity: 0.25 !important;
+   background-color: yellow !important;
+  color: black !important;
+  
+}
+

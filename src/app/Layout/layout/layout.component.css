@@ -1,0 +1,57 @@
+/* Full height layout */
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+#wrapper {
+  display: flex;
+  height: 100vh;
+}
+
+
+
+
+.custom-navbar .navbar-brand {
+  color: #ffffff !important;
+}
+
+.card {
+  border-left: 4px solid #0f6368;
+}
+
+.sidebar {
+  min-width: 250px;
+  max-width: 250px;
+}
+
+/* Optional: Additional styling for the component */
+.sidebar {
+  min-width: 250px;
+  max-width: 250px;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.custom-navbar {
+  background-color: #007bff; /* Primary color for navbar */
+}
+
+.accordion-button {
+  background-color: #f8f9fa;
+}
+
+.accordion-body {
+  padding: 1rem;
+}
+
+.card {
+  border-radius: 0.25rem;
+}
+
+.text-muted {
+  font-size: 0.9rem;
+}
+
+

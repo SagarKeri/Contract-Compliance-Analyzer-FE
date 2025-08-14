@@ -1,0 +1,61 @@
+<nav class="navbar navbar-expand-lg shadow custom-navbar bg-dark">
+  <div class="container-fluid d-flex align-items-center justify-content-between">
+
+    <div class="d-flex align-items-center">
+      <img
+        src="../../../assets/images/csgLogo.png"
+        alt="CSG Logo"
+        width="180px"
+        height="50px"
+        class="me-2 p-1"
+        style="background-color: white;"
+      />
+    </div>
+
+    <div class="mx-auto text-center">
+      <span class="navbar-brand text-white fw-bold">
+        Contract & Compliance Analyzer
+      </span>
+    </div>
+
+    <div class="d-flex align-items-center">
+      <!-- Analyze Link -->
+      <a
+        class="text-white me-3 fw-bold"
+        routerLink="/analyze"
+        style="white-space: nowrap;"
+      >
+        Analyze
+      </a>
+
+      <!-- CMS Dropdown -->
+      <ul class="navbar-nav">
+        <li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle text-white fw-bold"
+            href="#"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            CMS
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+              <a class="dropdown-item" routerLink="/country">Country</a>
+            </li>
+            <li>
+              <a class="dropdown-item" routerLink="/domain">Domain</a>
+            </li>
+            <!-- <li>
+              <a class="dropdown-item" routerLink="/compliance">Compliance</a>
+            </li> -->
+            <li>
+              <a class="dropdown-item" routerLink="/clause">Clause</a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

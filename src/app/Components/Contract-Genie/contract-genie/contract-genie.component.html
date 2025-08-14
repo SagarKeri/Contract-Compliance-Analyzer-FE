@@ -1,0 +1,21 @@
+<div class="d-flex flex-column border rounded" style="height: 80vh; background-color: #f8f9fa;">
+
+  <!-- Chat messages (scrollable) -->
+  <div #chatContainer class="flex-grow-1 overflow-auto p-3">
+    <div *ngFor="let msg of chatMessages" class="d-flex mb-2"
+         [ngClass]="{'justify-content-end': msg.sender === 'user', 'justify-content-start': msg.sender === 'bot'}">
+      <div class="p-2 rounded"
+           [ngClass]="{'bg-primary text-white': msg.sender === 'user', 'bg-light text-dark': msg.sender === 'bot'}"
+           >
+        {{ msg.message }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Input area (fixed) -->
+  <div class="d-flex p-2 border-top bg-white flex-shrink-0">
+    <input type="text" class="form-control me-2" placeholder="Type your message..."
+           [(ngModel)]="userInput" (keydown.enter)="sendMessage()">
+    <button class="btn btn-primary" (click)="sendMessage()">Send</button>
+  </div>
+</div>

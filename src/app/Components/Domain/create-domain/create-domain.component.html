@@ -1,0 +1,46 @@
+<div class="container mt-4">
+  <div class="card shadow-sm">
+    <div class="card-header bg-secondary text-white">
+      <h5 class="mb-0">Add Domain</h5>
+    </div>
+    <div class="card-body">
+      <form (ngSubmit)="addDomain()">
+        <div class="mb-3">
+          <label for="domainName" class="form-label">Domain Name</label>
+          <input
+            type="text"
+            id="domainName"
+            class="form-control"
+            [(ngModel)]="domainName"
+            name="domainName"
+            placeholder="Enter domain name"
+            required
+          />
+        </div>
+
+        <div class="mb-3">
+          <label for="countrySelect" class="form-label">Select Country</label>
+          <select
+            id="countrySelect"
+            class="form-select"
+            [(ngModel)]="selectedCountryId"
+            name="selectedCountryId"
+            required
+          >
+            <option [ngValue]="null" disabled>Select a country</option>
+            <option *ngFor="let country of countries" [value]="country._id">
+              {{ country.country_name }}
+            </option>
+          </select>
+        </div>
+
+        <button type="button" class="btn btn-secondary me-2" (click)="goBack()">
+          <i class="bi bi-arrow-left"></i> Back to List
+        </button>
+        <button
+          type="submit"
+          class="btn btn-success"
+          [disabled]="!domainName.trim() || !selectedCountryId || isSubmitting"
+        >
+          Add Domain
+        </button>
