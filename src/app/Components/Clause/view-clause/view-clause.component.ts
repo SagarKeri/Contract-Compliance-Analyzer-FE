@@ -28,7 +28,7 @@ export class ViewClauseComponent implements OnInit {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.clauseService.getClauseById(id).subscribe({
       next: (data) => {
-        this.clause = data[0];
+        this.clause = data;
         this.isLoading = false;
       },
       error: (err) => {

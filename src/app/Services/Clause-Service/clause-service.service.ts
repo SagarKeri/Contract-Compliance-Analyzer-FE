@@ -23,8 +23,8 @@ export class ClauseService {
   }
 
   // Get Clause by ID
-  getClauseById(id: number): Observable<Clause[]> {
-    return this.http.get<Clause[]>(`${this.apiUrl}/${id}`);
+  getClauseById(id: number): Observable<Clause> {
+    return this.http.get<Clause>(`${this.apiUrl}/${id}`);
   }
 
   // Update Clause

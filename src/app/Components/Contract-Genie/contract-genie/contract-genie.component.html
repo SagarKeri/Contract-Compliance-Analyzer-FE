@@ -1,21 +1,63 @@
-<div class="d-flex flex-column border rounded" style="height: 80vh; background-color: #f8f9fa;">
-
+<div
+  class="d-flex flex-column border rounded"
+  style="height: 40vh; background-color: #f8f9fa"
+>
   <!-- Chat messages (scrollable) -->
-  <div #chatContainer class="flex-grow-1 overflow-auto p-3">
-    <div *ngFor="let msg of chatMessages" class="d-flex mb-2"
-         [ngClass]="{'justify-content-end': msg.sender === 'user', 'justify-content-start': msg.sender === 'bot'}">
-      <div class="p-2 rounded"
-           [ngClass]="{'bg-primary text-white': msg.sender === 'user', 'bg-light text-dark': msg.sender === 'bot'}"
-           >
-        {{ msg.message }}
+  <div
+    #chatContainer
+    class="flex-grow-1 overflow-auto p-3"
+    style="overflow-x: hidden"
+  >
+    <div
+      *ngFor="let msg of chatMessages"
+      class="d-flex mb-2"
+      [ngClass]="{
+        'justify-content-end': msg.sender === 'user',
+        'justify-content-start': msg.sender === 'bot'
+      }"
+    >
+      <!-- Bot message -->
+      <div *ngIf="msg.sender === 'bot'" class="d-flex align-items-start">
+        <i class="bi bi-robot me-2 text-primary" style="font-size: 1.5rem"></i>
+        <div
+          class="p-2 rounded bg-primary text-white"
+          style="max-width: 70%; word-break: break-word"
+        >
+          {{ msg.message }}
+        </div>
+      </div>
+
+      <!-- User message -->
+      <div
+        *ngIf="msg.sender === 'user'"
+        class="d-flex align-items-center justify-content-end"
+      >
+        <div
+          class="d-flex align-items-center bg-secondary text-white p-2 rounded me-2"
+          style="max-width: 70%; word-break: break-word"
+        >
+          {{ msg.message }}
+        </div>
+          <i class="bi bi-person-circle ms-2 text-secondary" style="font-size: 1.5rem"></i>
       </div>
     </div>
   </div>
 
   <!-- Input area (fixed) -->
   <div class="d-flex p-2 border-top bg-white flex-shrink-0">
-    <input type="text" class="form-control me-2" placeholder="Type your message..."
-           [(ngModel)]="userInput" (keydown.enter)="sendMessage()">
-    <button class="btn btn-primary" (click)="sendMessage()">Send</button>
+    <input
+      type="text"
+      class="form-control me-2"
+      placeholder="Type your message..."
+      [(ngModel)]="userInput"
+      (keydown.enter)="sendMessage()"
+    />
+    <button
+      class="btn btn-primary"
+      [disabled]="!userInput.trim()"
+      (click)="sendMessage()"
+    >
+      Send
+    </button>
   </div>
 </div>

@@ -5,18 +5,19 @@ import { Router } from '@angular/router';
 import { ClauseService } from '../../../Services/Clause-Service/clause-service.service';
 import { CommonModule } from '@angular/common';
 import { NgxPaginationModule } from 'ngx-pagination';
+import { FormsModule } from '@angular/forms'; // Needed for [(ngModel)]
 
 @Component({
   selector: 'app-index-clause',
   standalone: true,
-   imports: [CommonModule, NgxPaginationModule],
+  imports: [CommonModule, NgxPaginationModule, FormsModule],
   templateUrl: './index-clause.component.html',
   styleUrls: ['./index-clause.component.css']
 })
 export class IndexClauseComponent implements OnInit {
-
   clauses: Clause[] = [];
   isLoading: boolean = true;
+  p: number = 1; // <-- Current page
 
   constructor(
     private clauseService: ClauseService,
@@ -59,8 +60,8 @@ export class IndexClauseComponent implements OnInit {
   }
 
   addCompliance(): void {
-      this.router.navigate(['/add-clause']);
-    }
+    this.router.navigate(['/add-clause']);
+  }
 
   editClause(id: number): void {
     this.router.navigate(['/edit-clause', id]);
@@ -69,5 +70,4 @@ export class IndexClauseComponent implements OnInit {
   viewClause(id: number): void {
     this.router.navigate(['/view-clause', id]);
   }
-
 }
