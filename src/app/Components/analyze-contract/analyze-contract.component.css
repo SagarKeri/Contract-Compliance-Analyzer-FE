@@ -8,3 +8,10 @@
     background-color: #299e66 !important;
     border-color: #299e66 !important;
 }
+
+.highlighted-clause {
+  background-color: yellow !important;
+  border: 1px solid orange !important;
+  opacity: 0.7;
+  padding: 2px;
+}

@@ -18,10 +18,10 @@ import {
 } from 'ngx-extended-pdf-viewer';
 
 import { ContractAnalysisServiceService } from '../../Services/contract-analysis.service.service';
-import { SpinnerServiceService } from '../../Services/Spinner-Service/spinner-service.service';
 import { SpinnerComponent } from '../../shared/spinner/spinner.component';
 import { ContractAnalysisResponse } from '../../Models/contract-analysis-response.model';
 import { HeaderComponent } from '../../shared/header/header.component';
+import { SpinnerService } from '../../Services/Spinner-Service/spinner-service.service';
 
 @Component({
   selector: 'app-layoutt',
@@ -60,7 +60,7 @@ export class LayoutComponent implements OnInit {
 
   constructor(
     private contractService: ContractAnalysisServiceService,
-    private spinnerService: SpinnerServiceService,
+    private spinnerService: SpinnerService,
     private toastr: ToastrService,
     private ngxExtendedPdfViewerService: NgxExtendedPdfViewerService,
     private notificationService: PDFNotificationService
@@ -114,6 +114,7 @@ export class LayoutComponent implements OnInit {
     this.contractService
       .analyzeContract(
         this.selectedFile,
+        [],
         this.selectedModel,
         this.selectedCountry
       )
@@ -121,11 +122,15 @@ export class LayoutComponent implements OnInit {
         next: (response: any) => {
           if (Array.isArray(response)) {
             this.analysisResult = response;
+             this.feedbackSubmitted = false;
+            console.log(this.cacheKey);
+            this.toastr.success("Contract Successfully Analyzed.","Success!")
           } else {
             console.log(response);
             this.analysisResult = response.analysis_result || [];
             this.cacheKey = response.cache_key || null;
             this.feedbackSubmitted = false;
+            console.log(this.cacheKey);
             this.toastr.success("Contract Successfully Analyzed.","Success!")
           }
           this.spinnerService.hide();

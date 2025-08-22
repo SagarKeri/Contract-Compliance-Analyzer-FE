@@ -24,7 +24,8 @@ import { HeaderComponent } from '../../shared/header/header.component';
 import { CountryService } from '../../Services/Country-Service/country-service.service';
 import { DomainService } from '../../Services/Domain-Service/domain-service.service';
 import { ClauseService } from '../../Services/Clause-Service/clause-service.service';
-import { ContractGenieComponent } from "../Contract-Genie/contract-genie/contract-genie.component";
+import { ContractGenieComponent } from '../Contract-Genie/contract-genie/contract-genie.component';
+import { ClauseDetailsComponent } from '../clause-details/clause-details.component';
 
 @Component({
   selector: 'app-analyze-contract',
@@ -34,10 +35,11 @@ import { ContractGenieComponent } from "../Contract-Genie/contract-genie/contrac
     HttpClientModule,
     NgxExtendedPdfViewerModule,
     FormsModule,
-    ContractGenieComponent
-],
+    ContractGenieComponent,
+    ClauseDetailsComponent,
+  ],
   templateUrl: './analyze-contract.component.html',
-  styleUrl: './analyze-contract.component.css'
+  styleUrl: './analyze-contract.component.css',
 })
 export class AnalyzeContractComponent implements OnInit {
   fileName: string = '';
@@ -58,10 +60,13 @@ export class AnalyzeContractComponent implements OnInit {
   feedbackSubmitted = false;
   fileUploaded: boolean = false;
   isSidebarVisible: boolean = true;
-  countries: { _id: number, country_name: string }[] = [];
-  domains: { _id: number, domain_name: string }[] = [];
-
+  countries: { _id: number; country_name: string }[] = [];
+  domains: { _id: number; domain_name: string }[] = [];
+  selectedStatus: string = ''; // bound to dropdown
   selectedDomain: number | null = null;
+  selectedClauseId: number = 0;
+  selectAll: boolean = false;
+  description: string = '';
 
   constructor(
     private countryService: CountryService,
@@ -82,10 +87,10 @@ export class AnalyzeContractComponent implements OnInit {
           'renderedtextlayerhighlights',
           (event: RenderedTextLayerHighlights) => {
             console.log('Applying custom highlights');
-            event.highlights.forEach((highlight) => {
-              highlight.classList.add('highlighted-clause');
-              highlight.classList.remove('highlight'); // Remove default PDF.js highlight
-            });
+            // event.highlights.forEach((highlight) => {
+            //   highlight.classList.add('highlighted-clause');
+            //   highlight.classList.remove('highlight'); // Remove default PDF.js highlight
+            // });
           }
         );
       } else {
@@ -112,37 +117,39 @@ export class AnalyzeContractComponent implements OnInit {
 
   loadCountries(): void {
     this.countryService.getCountries().subscribe({
-      next: (data: any) => this.countries = data,
-      error: err => {
+      next: (data: any) => (this.countries = data),
+      error: (err) => {
         console.error('Error fetching countries', err);
         this.toastr.error('Failed to load countries');
-      }
+      },
     });
   }
 
   onCountryChange(event: any): void {
-  this.selectedCountry = +event.target.value;
-  this.selectedDomain = null;
-  this.clauses = [];
-  this.selectedClauses = [];
-  if (this.selectedCountry) this.loadDomains(this.selectedCountry);
-}
+    this.selectedCountry = +event.target.value;
+    this.selectedDomain = null;
+    this.clauses = [];
+    this.selectedClauses = [];
+    if (this.selectedCountry) this.loadDomains(this.selectedCountry);
+  }
 
   loadDomains(countryId: number): void {
     this.domainService.getDomainsByCountry(countryId).subscribe({
-      next: (data: any) => this.domains = data,
-      error: err => {
+      next: (data: any) => (this.domains = data),
+      error: (err) => {
         console.error('Error fetching domains', err);
         this.toastr.error('Failed to load domains');
-      }
+      },
     });
   }
-  
+
   analyzeContract(): void {
     if (!this.selectedFile) {
       this.toastr.warning('No file selected.');
       return;
     }
+
+    console.log(this.selectedClauses);
 
     this.feedbackMessages = {};
 
@@ -155,17 +162,21 @@ export class AnalyzeContractComponent implements OnInit {
       )
       .subscribe({
         next: (response: any) => {
-          if (Array.isArray(response.analysis)) {
-            this.fileUploaded = true;
-            this.analysisResult = response.analysis;
-            this.restoreSelectedClauses();
-          } else {
-            console.log(response);
-            this.analysisResult = response.analysis_result || [];
-            this.cacheKey = response.cache_key || null;
-            this.feedbackSubmitted = false;
-            this.toastr.success("Contract Successfully Analyzed.","Success!")
-          }
+          // if (Array.isArray(response.analysis)) {
+          //   this.fileUploaded = true;
+          //   this.analysisResult = response.analysis;
+          //   this.restoreSelectedClauses();
+          // } else {
+          console.log(response);
+          this.fileUploaded = true;
+          this.analysisResult = response.analysis.analysis || [];
+          this.cacheKey = response.cachekey || null;
+          this.description = response.analysis.description;
+          console.log(this.cacheKey);
+          this.feedbackSubmitted = false;
+          this.restoreSelectedClauses();
+          this.toastr.success('Contract Successfully Analyzed.', 'Success!');
+          //}
         },
         error: (err) => {
           this.toastr.error('Error analyzing contract: ' + err.message);
@@ -185,7 +196,8 @@ export class AnalyzeContractComponent implements OnInit {
     this.pageRenderedbool = true;
   }
 
-  async highlightTextt(text: string): Promise<void> {
+  async highlightTextt(searchText: string): Promise<void> {
+    const text = searchText.replace('...', '');
     if (!text) {
       this.toastr.warning('No text to highlight.');
       return;
@@ -206,7 +218,7 @@ export class AnalyzeContractComponent implements OnInit {
     const normalizedSearchText = text
       .replace(/\s+/g, ' ')
       .replace(/–|—/g, '-')
-      .replace(/[‘’“”]/g, "'") 
+      .replace(/[‘’“”]/g, "'")
       .trim();
 
     try {
@@ -298,17 +310,19 @@ export class AnalyzeContractComponent implements OnInit {
   }
 
   onDomainChange(event: any): void {
-  this.selectedDomain = +event.target.value;
-  this.loadClauses();
-}
+    this.selectedDomain = +event.target.value;
+    this.loadClauses();
+  }
 
   toggleSidebar() {
     this.isSidebarVisible = !this.isSidebarVisible;
   }
 
   clauses: {
-selected: boolean; _id: number, clause_name: string 
-}[] = [];
+    selected: boolean;
+    _id: number;
+    clause_name: string;
+  }[] = [];
   selectedClauses: number[] = [];
 
   loadClauses(): void {
@@ -320,34 +334,78 @@ selected: boolean; _id: number, clause_name: string
         .subscribe({
           next: (data: any) => {
             this.clauses = data;
-            this.selectedClauses = []; 
+            this.selectedClauses = [];
           },
-          error: err => {
+          error: (err) => {
             console.error('Error fetching clauses', err);
             this.toastr.error('Failed to load clauses');
-          }
+          },
         });
     } else {
       this.clauses = [];
       this.selectedClauses = [];
     }
-}
+  }
 
+  onClauseChange(clauseId: number, event: any): void {
+    if (event.target.checked) {
+      this.selectedClauses.push(clauseId);
+    } else {
+      this.selectedClauses = this.selectedClauses.filter(
+        (id) => id !== clauseId
+      );
+    }
+  }
+  restoreSelectedClauses(): void {
+    if (!this.selectedClauses || this.selectedClauses.length === 0) return;
 
+    this.clauses.forEach((clause) => {
+      clause.selected = this.selectedClauses.includes(clause._id);
+    });
+  }
 
-onClauseChange(clauseId: number, event: any): void {
-  if (event.target.checked) {
-    this.selectedClauses.push(clauseId);
-  } else {
-    this.selectedClauses = this.selectedClauses.filter(id => id !== clauseId);
+  openClause(id: number): void {
+    console.log(id);
+    this.selectedClauseId = id;
+  }
+
+  filteredAnalysisResult() {
+    if (!this.selectedStatus) {
+      return this.analysisResult;
+    }
+    return this.analysisResult.filter(
+      (item) => item.missing_clause === this.selectedStatus
+    );
+  }
+
+  getPercentage(status: string): number {
+    if (!this.analysisResult || this.analysisResult.length === 0) return 0;
+
+    const total = this.analysisResult.length;
+    const count = this.analysisResult.filter(
+      (item) => item.missing_clause === status
+    ).length;
+
+    return ((count / total) * 100).toFixed(2) as unknown as number; // returns 2 decimal %
+  }
+
+  onSingleClauseChange(): void {
+    this.selectedClauses = this.clauses
+      .filter((c) => c.selected)
+      .map((c) => c._id);
+
+    this.selectAll = this.clauses.every((c) => c.selected);
+  }
+
+  toggleSelectAll(event: any): void {
+    this.selectAll = event.target.checked;
+
+    if (this.selectAll) {
+      this.clauses.forEach((c) => (c.selected = true));
+      this.selectedClauses = this.clauses.map((c) => c._id);
+    } else {
+      this.clauses.forEach((c) => (c.selected = false));
+      this.selectedClauses = [];
+    }
   }
 }
-restoreSelectedClauses(): void {
-  if (!this.selectedClauses || this.selectedClauses.length === 0) return;
-
-  this.clauses.forEach(clause => {
-    clause.selected = this.selectedClauses.includes(clause._id);
-  });
-}
-}
-

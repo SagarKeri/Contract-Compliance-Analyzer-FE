@@ -49,9 +49,9 @@ export class EditClauseComponent implements OnInit {
   loadClause(): void {
     this.clauseService.getClauseById(this.clauseId).subscribe({
       next: (data) => {
-        this.clauseName = data[0]?.clause_name;
-        this.clauseText = data[0]?.clause_text;
-        this.selectedDomainId = data[0]?.domain_id;
+        this.clauseName = data?.clause_name;
+        this.clauseText = data?.clause_text;
+        this.selectedDomainId = data?.domain_id;
         this.isLoading = false;
       },
       error: (err) => {

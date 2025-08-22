@@ -1,3 +1,5 @@
+<app-clause-details [clauseId]="selectedClauseId"></app-clause-details>
+
 <div class="container-fluid mt-2 px-2 mb-4">
   <!-- Before File Upload: Centered Card -->
   <div *ngIf="!fileUploaded" class="d-flex justify-content-center">
@@ -74,21 +76,69 @@
 
         <!-- Clauses Checklist -->
         <div class="col-12 mt-3" *ngIf="clauses.length > 0">
-          <label class="form-label fw-bold text-secondary"
-            >Select Clauses</label
-          >
-          <div class="form-check form-check-capsule" *ngFor="let clause of clauses">
-          <input
-            class="form-check-input"
-            type="checkbox"
-            [id]="'clause' + clause._id"
-            (change)="onClauseChange(clause._id, $event)"
-          />
-          <label class="form-check-label" [for]="'clause' + clause._id">
-            {{ clause.clause_name }}
-          </label>
-        </div>
+          <!-- Label + Select All in one row -->
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <label class="form-label fw-bold text-secondary mb-0">
+              Select Clauses
+            </label>
 
+            <div class="form-check mb-0">
+              <input
+                type="checkbox"
+                class="form-check-input"
+                id="selectAllClauses"
+                [(ngModel)]="selectAll"
+                (change)="toggleSelectAll($event)"
+                style="cursor: pointer"
+              />
+              <label
+                class="form-check-label fw-semibold text-dark"
+                for="selectAllClauses"
+              >
+                Select All
+              </label>
+            </div>
+          </div>
+
+          <!-- Fixed width + scrollable if too many -->
+          <div
+            class="border rounded shadow-sm bg-white p-2"
+            style="max-height: 300px; overflow-y: auto"
+          >
+            <div
+              class="d-flex align-items-center justify-content-between border rounded p-2 mb-2 shadow-sm bg-light"
+              *ngFor="let clause of clauses"
+              style="min-width: 360px"
+            >
+              <!-- Left: Checkbox + Clause Name -->
+              <div class="d-flex align-items-center">
+                <input
+                  class="form-check-input me-2"
+                  type="checkbox"
+                  [id]="'clause' + clause._id"
+                  [(ngModel)]="clause.selected"
+                  (change)="onSingleClauseChange()"
+                  style="cursor: pointer"
+                />
+                <label
+                  class="form-check-label fw-semibold text-dark mb-0"
+                  [for]="'clause' + clause._id"
+                >
+                  {{ clause.clause_name }}
+                </label>
+              </div>
+
+              <!-- Right: View button -->
+              <button
+                class="btn btn-sm btn-outline-primary"
+                data-bs-toggle="modal"
+                data-bs-target="#clauseModal"
+                (click)="openClause(clause._id)"
+              >
+                <i class="bi bi-eye"></i>
+              </button>
+            </div>
+          </div>
         </div>
 
         <!-- Analyze Button -->
@@ -105,9 +155,7 @@
     </div>
   </div>
 
-  <!-- After File Upload: 3-Column Layout -->
   <div *ngIf="fileUploaded" class="row gx-3">
-    <!-- Column 1: Selection Pane -->
     <div class="col-md-3">
       <div class="card shadow-lg p-4 mb-3">
         <div class="row g-3 align-items-center">
@@ -140,102 +188,240 @@
             data-bs-parent="#analysisAccordion"
           >
             <div
-              class="accordion-body p-0"
+              class="accordion-body p-2"
               style="height: 80vh; display: flex; flex-direction: column"
             >
-              <!-- Tabs Navigation -->
-              <ul class="nav nav-tabs" id="analysisTab" role="tablist">
-                <li class="nav-item" role="presentation">
-                  <button
-                    class="nav-link text-primary active"
-                    id="response-tab"
-                    data-bs-toggle="tab"
-                    data-bs-target="#response"
-                    type="button"
-                    role="tab"
-                    aria-controls="response"
-                    aria-selected="true"
-                  >
-                    Response
-                  </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                  <button
-                    class="text-primary nav-link"
-                    id="contract-genie-tab"
-                    data-bs-toggle="tab"
-                    data-bs-target="#contract-genie"
-                    type="button"
-                    role="tab"
-                    aria-controls="contract-genie"
-                    aria-selected="false"
-                  >
-                    Contract Genie
-                  </button>
-                </li>
-              </ul>
-
-              <!-- Tabs Content -->
-              <div
-                class="tab-content flex-grow-1 overflow-auto p-3"
-                id="analysisTabContent"
-              >
-                <!-- Response Tab -->
-                <div
-                  class="tab-pane fade show active"
-                  id="response"
-                  role="tabpanel"
-                  aria-labelledby="response-tab"
-                >
-                  <div *ngIf="analysisResult.length === 0" class="text-muted">
-                    No issues found or no file analyzed yet.
-                  </div>
+              <!-- Inner Accordion for Table & Cards -->
+              <div class="accordion" id="innerAccordion">
+                <!-- Table Section -->
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="headingTable">
+                    <button
+                      class="accordion-button collapsed fw-bold text-primary"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#collapseTable"
+                      aria-expanded="false"
+                      aria-controls="collapseTable"
+                    >
+                      Clause Summary Table
+                    </button>
+                  </h2>
                   <div
-                    *ngFor="let item of analysisResult"
-                    class="card mb-3 shadow-sm"
+                    id="collapseTable"
+                    class="accordion-collapse collapse"
+                    aria-labelledby="headingTable"
+                    data-bs-parent="#innerAccordion"
                   >
-                    <div class="card-body">
-                      <h6 class="card-title text-primary">
-                        {{ item.compliance_area }}
-                      </h6>
-                      <p class="mb-1">
-                        <strong>Status:</strong> {{ item.missing_clause }}
-                      </p>
-                      <p *ngIf="item.extracted_text">
-                        <strong>Extracted Clause:</strong><br />
-                        <span class="text-muted">{{
-                          item.extracted_text
-                        }}</span>
-                        <button
-                          class="btn btn-sm btn-link text-primary ms-2"
-                          (click)="highlightTextt(item.extracted_text)"
-                        >
-                          Jump in Pdf
-                          <i class="bi bi-arrow-up-right-square"></i>
-                        </button>
-                      </p>
-                      <p *ngIf="!item.extracted_text" class="text-danger small">
-                        Clause not found in the contract.
-                      </p>
+                    <div
+                      class="accordion-body overflow-auto"
+                      style="max-height: 500px"
+                    >
+                      <table
+                        class="table table-bordered table-hover text-center align-middle shadow-sm"
+                      >
+                        <thead class="table-light">
+                          <tr>
+                            <th scope="col">Document Name</th>
+                            <th scope="col">Sufficient %</th>
+                            <th scope="col">Insufficient %</th>
+                            <th scope="col">Missing %</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <!-- Dynamic document name -->
+                            <td>
+                              <strong>{{ selectedFile?.name }}</strong>
+                            </td>
+
+                            <!-- Percentages -->
+                            <td class="text-success fw-bold">
+                              {{ getPercentage("Sufficient") }}%
+                            </td>
+                            <td class="text-warning fw-bold">
+                              {{ getPercentage("Insufficient") }}%
+                            </td>
+                            <td class="text-danger fw-bold">
+                              {{ getPercentage("Missing") }}%
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+
+                      <div class="mt-3 p-3 border rounded bg-light">
+                        <h6 class="fw-bold text-secondary">Description</h6>
+                        <p class="mb-0 fst-italic">
+                          {{
+                            description ||
+                              "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+                          }}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                <!-- Contract Genie Tab (Empty) -->
-                <div
-                  class="tab-pane fade"
-                  id="contract-genie"
-                  role="tabpanel"
-                  aria-labelledby="contract-genie-tab"
-                >
-                  <app-contract-genie></app-contract-genie>
+                <!-- Cards Section -->
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="headingCards">
+                    <button
+                      class="accordion-button collapsed fw-bold text-primary"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#collapseCards"
+                      aria-expanded="false"
+                      aria-controls="collapseCards"
+                    >
+                      Detailed Clause Analysis
+                    </button>
+                  </h2>
+                  <div
+                    id="collapseCards"
+                    class="accordion-collapse collapse"
+                    aria-labelledby="headingCards"
+                    data-bs-parent="#innerAccordion"
+                  >
+                    <div
+                      class="accordion-body overflow-auto"
+                      style="max-height: 500px"
+                    >
+                      <!-- Bootstrap Tabs -->
+                      <ul
+                        class="nav nav-tabs text-primary mb-3"
+                        id="analysisTabs"
+                        role="tablist"
+                      >
+                        <li class="nav-item" role="presentation">
+                          <button
+                            class="nav-link active"
+                            id="results-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#results"
+                            type="button"
+                            role="tab"
+                            aria-controls="results"
+                            aria-selected="true"
+                          >
+                            Results
+                          </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                          <button
+                            class="nav-link"
+                            id="contract-genie-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#contract-genie"
+                            type="button"
+                            role="tab"
+                            aria-controls="contract-genie"
+                            aria-selected="false"
+                          >
+                            Contract Genie
+                          </button>
+                        </li>
+                      </ul>
+
+                      <div class="tab-content">
+                        <!-- Results Tab -->
+                        <div
+                          class="tab-pane fade show active"
+                          id="results"
+                          role="tabpanel"
+                          aria-labelledby="results-tab"
+                        >
+                          <!-- Filter Dropdown -->
+                          <div class="mb-3 d-flex align-items-center gap-2">
+                            <label
+                              for="statusFilter"
+                              class="form-label fw-bold text-secondary mb-0"
+                            >
+                              Filter by Status:
+                            </label>
+                            <select
+                              id="statusFilter"
+                              class="form-select w-auto"
+                              [(ngModel)]="selectedStatus"
+                            >
+                              <option value="">All</option>
+                              <option value="Sufficient">Sufficient</option>
+                              <option value="Insufficient">Insufficient</option>
+                              <option value="Missing">Missing</option>
+                            </select>
+                          </div>
+
+                          <!-- Cards -->
+                          <div
+                            *ngIf="filteredAnalysisResult().length === 0"
+                            class="text-muted"
+                          >
+                            No Results Found!
+                          </div>
+
+                          <div
+                            *ngFor="let item of filteredAnalysisResult()"
+                            class="card mb-3 shadow-sm"
+                          >
+                            <div class="card-body">
+                              <h6 class="card-title text-primary">
+                                {{ item.compliance_area }}
+                              </h6>
+                              <p class="mb-1">
+                                <strong>Status:</strong>
+                                {{ item.missing_clause }}
+                              </p>
+                              <p *ngIf="item.reason" class="mb-1">
+                                <strong>Reason:</strong>
+                                {{ item.reason }}
+                              </p>
+
+                              <p *ngIf="item.extracted_text">
+                                <strong>Extracted Clause:</strong><br />
+                                <span class="text-muted">{{
+                                  item.extracted_text
+                                }}</span>
+                                <button
+                                  class="btn btn-sm btn-link text-primary ms-2"
+                                  (click)="highlightTextt(item.extracted_text)"
+                                >
+                                  Jump in Pdf
+                                  <i class="bi bi-arrow-up-right-square"></i>
+                                </button>
+                              </p>
+
+                              <p
+                                *ngIf="!item.extracted_text"
+                                class="text-danger small"
+                              >
+                                Clause not found in the contract.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Contract Genie Tab -->
+                        <div
+                          class="tab-pane fade"
+                          id="contract-genie"
+                          role="tabpanel"
+                          aria-labelledby="contract-genie-tab"
+                        >
+                          <app-contract-genie
+                            [selectedFile]="selectedFile"
+                          ></app-contract-genie>
+                        </div>
+                      </div>
+                      <!-- End Tabs -->
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <!-- Feedback Section -->
+              <!-- Fixed Feedback Section -->
               <div
                 *ngIf="analysisResult.length > 0"
                 class="text-center rounded py-3 border-top bg-white"
+                style="position: sticky; bottom: 0; z-index: 10"
               >
                 <p class="fw-bold text-secondary mb-2">
                   Was this analysis helpful?
@@ -382,19 +568,68 @@
 
     <!-- Clauses Checklist -->
     <div class="col-12 mt-3" *ngIf="clauses.length > 0">
-      <label class="form-label fw-bold text-secondary">Select Clauses</label>
-      <div class="form-check" *ngFor="let clause of clauses">
-      <input
-        class="form-check-input"
-        type="checkbox"
-        [id]="'clause' + clause._id"
-        [(ngModel)]="clause.selected"
-        (change)="onClauseChange(clause._id, $event)"
-      />
-      <label class="form-check-label" [for]="'clause' + clause._id">
-        {{ clause.clause_name }}
-      </label>
-    </div>
+      <!-- Label + Select All in one row -->
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <label class="form-label fw-bold text-secondary mb-0">
+          Select Clauses
+        </label>
+
+        <div class="form-check mb-0">
+          <input
+            type="checkbox"
+            class="form-check-input"
+            id="selectAllClauses"
+            [(ngModel)]="selectAll"
+            (change)="toggleSelectAll($event)"
+            style="cursor: pointer"
+          />
+          <label
+            class="form-check-label fw-semibold text-dark"
+            for="selectAllClauses"
+          >
+            Select All
+          </label>
+        </div>
+      </div>
+
+      <!-- Scrollable box -->
+      <div
+        class="border rounded shadow-sm bg-white p-2"
+        style="max-height: 300px; overflow-y: auto"
+      >
+        <div
+          class="d-flex align-items-center justify-content-between border rounded p-2 mb-2 shadow-sm bg-light"
+          *ngFor="let clause of clauses"
+        >
+          <!-- Left: Checkbox + Clause Name -->
+          <div class="d-flex align-items-center">
+            <input
+              class="form-check-input me-2"
+              type="checkbox"
+              [id]="'clause' + clause._id"
+              [(ngModel)]="clause.selected"
+              (change)="onClauseChange(clause._id, $event)"
+              style="cursor: pointer"
+            />
+            <label
+              class="form-check-label fw-semibold text-dark mb-0"
+              [for]="'clause' + clause._id"
+            >
+              {{ clause.clause_name }}
+            </label>
+          </div>
+
+          <!-- Right: View button -->
+          <button
+            class="btn btn-sm btn-outline-primary"
+            data-bs-toggle="modal"
+            data-bs-target="#clauseModal"
+            (click)="openClause(clause._id)"
+          >
+            <i class="bi bi-eye"></i>
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Analyze Button -->

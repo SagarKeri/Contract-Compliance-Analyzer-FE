@@ -90,3 +90,10 @@ ngx-extended-pdf-viewer .textLayer .highlight.selected {
   
 }
 
+.nav-link{
+  color:#299e66 !important;
+}
+
+.ngx-pagination .current{
+  background: #299e66 !important;
+}

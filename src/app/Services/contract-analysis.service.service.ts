@@ -3,6 +3,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { ContractAnalysisResponse } from '../Models/contract-analysis-response.model';
+import { ApiResponse } from '../Models/ApiResponse.model';
 
 @Injectable({
   providedIn: 'root',
@@ -10,8 +11,6 @@ import { ContractAnalysisResponse } from '../Models/contract-analysis-response.m
 export class ContractAnalysisServiceService {
   private readonly uploadApiUrl = 'http://localhost:8080/analyze-contract';
   private readonly feedbackApiUrl = 'http://localhost:8080/feedback';
-  private readonly saveCopyApiUrl = 'http://localhost:8080/save-copy';
-  private readonly downloadApiUrl = 'http://localhost:8080/download-pdf';
 
   constructor(private http: HttpClient) {}
 
@@ -20,7 +19,7 @@ export class ContractAnalysisServiceService {
   clauses: number[],
   model:number,
   country:number
-): Observable<ContractAnalysisResponse[]> {
+): Observable<ApiResponse> {
   const formData = new FormData();
   formData.append('file', file);
   formData.append('clauses', JSON.stringify(clauses));
@@ -29,7 +28,7 @@ export class ContractAnalysisServiceService {
 
   return this.http
     .post<
-      | ContractAnalysisResponse[]
+      | ApiResponse
       | { error: string; raw_output: string; cache_key: string }
     >(this.uploadApiUrl, formData)
     .pipe(
@@ -39,7 +38,7 @@ export class ContractAnalysisServiceService {
             `Backend error: ${response.error}. Raw output: ${response.raw_output}`
           );
         }
-        return response as ContractAnalysisResponse[];
+        return response as ApiResponse;
       }),
       catchError(this.handleError)
     );

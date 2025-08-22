@@ -1,5 +1,5 @@
 <div class="container mt-4" *ngIf="!isLoading && clause">
-  <div class="card shadow-sm">
+  <div class="card shadow-lg mb-5">
     <div class="card-header bg-secondary text-white">
       <h5 class="mb-0 text-center">Clause Details</h5>
     </div>
@@ -13,8 +13,8 @@
         <p>{{ clause.clause_text }}</p>
       </div>
       <div class="mb-3">
-        <label class="form-label fw-bold">Domain ID:</label>
-        <p>{{ clause.domain_id }}</p>
+        <label class="form-label fw-bold">Domain Name:</label>
+        <p>{{ clause.domain_name }}</p>
       </div>
       <button class="btn btn-secondary" (click)="goBack()">
         <i class="bi bi-arrow-left"></i> Back
