@@ -16,9 +16,10 @@ import { IndexClauseComponent } from './Components/Clause/index-clause/index-cla
 import { CreateClauseComponent } from './Components/Clause/create-clause/create-clause.component';
 import { ViewClauseComponent } from './Components/Clause/view-clause/view-clause.component';
 import { EditClauseComponent } from './Components/Clause/edit-clause/edit-clause.component';
+import { AdminPersonaComponent } from './Components/admin-persona/admin-persona.component';
 
 export const routes: Routes = [
-  { path: 'analyze', component: AnalyzeContractComponent },
+  { path: '', component: AnalyzeContractComponent },
   { path: 'country', component: IndexCountryComponent },
   { path: 'add-country', component: CreateCountryComponent },
   { path: 'view-country/:id', component: ViewCountryComponent },
@@ -35,5 +36,6 @@ export const routes: Routes = [
   { path: 'add-clause', component: CreateClauseComponent },
   { path: 'view-clause/:id', component: ViewClauseComponent },
   { path: 'edit-clause/:id', component: EditClauseComponent },
-  { path: '', redirectTo: '/analyze', pathMatch: 'full' }
+  { path: 'admin', component: AdminPersonaComponent },
+  { path: '', redirectTo: '', pathMatch: 'full' }
 ];

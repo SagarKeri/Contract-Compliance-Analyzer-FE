@@ -90,7 +90,9 @@ ngx-extended-pdf-viewer .textLayer .highlight.selected {
   
 }
 
-.nav-link{
+
+
+.navbar-nav .nav-link.active, .navbar-nav .nav-link.show{
   color:#299e66 !important;
 }
 
