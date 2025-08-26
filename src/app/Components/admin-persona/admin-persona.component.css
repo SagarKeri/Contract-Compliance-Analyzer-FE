@@ -1,0 +1,24 @@
+.sidebar-card {
+  border-radius: 20px;
+  height: calc(100vh - 2rem); /* Fills viewport but leaves margin */
+  overflow-y: hidden;          /* ✅ Removes vertical scroll bar */
+}
+
+.nav-link {
+  font-size: 1.1rem;
+  color: #333;
+  padding: 12px 15px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.nav-link:hover {
+  background-color: #f1f1f1;
+  border-radius: 10px;
+}
+
+.nav-link.active {
+  font-weight: bold;
+  color: #0d6efd;
+  background-color: #e7f1ff;
+  border-radius: 10px;
+}
