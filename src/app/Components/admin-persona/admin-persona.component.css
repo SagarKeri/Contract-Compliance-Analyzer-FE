@@ -1,11 +1,9 @@
-<<<<<<< Updated upstream
+
 .sidebar-card {
   border-radius: 20px;
   height: calc(100vh - 2rem); /* Fills viewport but leaves margin */
   overflow-y: hidden;          /* ✅ Removes vertical scroll bar */
 }
-
-=======
 /* Sidebar card styling */
 .sidebar-card {
   border-radius: 20px;
@@ -13,22 +11,16 @@
   overflow-y: hidden;          /* Prevents sidebar scroll */
 }
 
-/* Navigation links */
->>>>>>> Stashed changes
 .nav-link {
   font-size: 1.1rem;
   color: #333;
   padding: 12px 15px;
-<<<<<<< Updated upstream
-=======
   border-radius: 10px;
->>>>>>> Stashed changes
   transition: background 0.2s, color 0.2s;
 }
 
 .nav-link:hover {
   background-color: #f1f1f1;
-<<<<<<< Updated upstream
   border-radius: 10px;
 }
 
@@ -38,8 +30,7 @@
   background-color: #e7f1ff;
   border-radius: 10px;
 }
-=======
-}
+
 
 
 /* Main content area scrolls independently */
@@ -73,5 +64,3 @@
   background-color:#0f6368 !important;
   color: #fff !important;
 }
-
->>>>>>> Stashed changes
