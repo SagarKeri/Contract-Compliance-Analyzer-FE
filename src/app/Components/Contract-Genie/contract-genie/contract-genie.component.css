@@ -1,4 +1,4 @@
-/* Smooth scrollbar */
+
 #chatContainer::-webkit-scrollbar {
   width: 6px;
 }
@@ -14,7 +14,7 @@
 }
 
 
-/* Optional custom styling if needed
+
 #chatContainer::-webkit-scrollbar {
   width: 6px;
 }
