@@ -40,6 +40,6 @@ export class ViewClauseComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/clause']);
+    this.router.navigate(['admin/clause']);
   }
 }

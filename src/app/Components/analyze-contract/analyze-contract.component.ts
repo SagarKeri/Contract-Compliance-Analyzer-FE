@@ -26,6 +26,7 @@ import { DomainService } from '../../Services/Domain-Service/domain-service.serv
 import { ClauseService } from '../../Services/Clause-Service/clause-service.service';
 import { ContractGenieComponent } from '../Contract-Genie/contract-genie/contract-genie.component';
 import { ClauseDetailsComponent } from '../clause-details/clause-details.component';
+import { ApplicationServiceService } from '../../Services/application-service/application-service.service';
 
 @Component({
   selector: 'app-analyze-contract',
@@ -75,28 +76,39 @@ export class AnalyzeContractComponent implements OnInit {
     private contractService: ContractAnalysisServiceService,
     private toastr: ToastrService,
     private ngxExtendedPdfViewerService: NgxExtendedPdfViewerService,
-    private notificationService: PDFNotificationService
+    private notificationService: PDFNotificationService,
+    private appService: ApplicationServiceService,
   ) {
     // Wait for PDF.js initialization
     effect(() => {
-      this.PDFViewerApplication = this.notificationService.onPDFJSInitSignal();
-      if (this.PDFViewerApplication) {
-        console.log('PDFViewerApplication initialized');
-        // Customize highlights
-        this.PDFViewerApplication.eventBus?.on(
-          'renderedtextlayerhighlights',
-          (event: RenderedTextLayerHighlights) => {
-            console.log('Applying custom highlights');
-            // event.highlights.forEach((highlight) => {
-            //   highlight.classList.add('highlighted-clause');
-            //   highlight.classList.remove('highlight'); // Remove default PDF.js highlight
-            // });
-          }
-        );
-      } else {
-        console.log('PDFViewerApplication not yet initialized');
-      }
-    });
+    // 🔹 Handle PDF.js init
+    this.PDFViewerApplication = this.notificationService.onPDFJSInitSignal();
+    if (this.PDFViewerApplication) {
+      console.log('PDFViewerApplication initialized');
+      this.PDFViewerApplication.eventBus?.on(
+        'renderedtextlayerhighlights',
+        (event: RenderedTextLayerHighlights) => {
+          console.log('Applying custom highlights');
+          // event.highlights.forEach((highlight) => {
+          //   highlight.classList.add('highlighted-clause');
+          //   highlight.classList.remove('highlight'); 
+          // });
+        }
+      );
+    } else {
+      console.log('PDFViewerApplication not yet initialized');
+    }
+
+    this.appService.file$
+      //.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((file) => {
+        this.selectedFile = file;
+        this.fileName = file ? file.name : '';
+        if (file) {
+          this.pdfSrc = URL.createObjectURL(file);
+        }
+      });
+  });
   }
 
   ngOnInit(): void {
@@ -112,6 +124,7 @@ export class AnalyzeContractComponent implements OnInit {
       this.pdfLoaded = false;
       this.pageRenderedbool = false;
       this.pdfSrc = URL.createObjectURL(file);
+      this.appService.setFile(file);
     }
   }
 

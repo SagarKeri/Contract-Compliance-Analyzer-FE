@@ -99,3 +99,28 @@ ngx-extended-pdf-viewer .textLayer .highlight.selected {
 .ngx-pagination .current{
   background: #299e66 !important;
 }
+
+.card-border {
+  border-color: #0f6368;
+}
+
+
+/* Apply border + shadow to all input fields globally */
+input,
+select,
+textarea {
+  border: 1px solid #0f6368 !important;
+  border-radius: 4px;
+  padding: 6px;
+  box-shadow: 0 2px 6px rgba(15, 99, 104, 0.25); /* teal-ish soft shadow */
+  outline: none; /* remove default blue highlight */
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+/* Optional: add stronger shadow on focus */
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #0f6368;
+  box-shadow: 0 4px 10px rgba(15, 99, 104, 0.4);
+}

@@ -76,7 +76,7 @@ export class EditClauseComponent implements OnInit {
     this.clauseService.updateClause(this.clauseId, clause).subscribe({
       next: () => {
         this.toastr.success('Clause updated successfully', 'Success');
-        this.router.navigate(['/clause']);
+        this.router.navigate(['admin/clause']);
       },
       error: (err) => {
         console.error(err);
@@ -87,7 +87,7 @@ export class EditClauseComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/clause']);
+    this.router.navigate(['admin/clause']);
   }
 
 }

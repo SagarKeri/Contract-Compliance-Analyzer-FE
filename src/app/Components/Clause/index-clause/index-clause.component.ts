@@ -60,14 +60,14 @@ export class IndexClauseComponent implements OnInit {
   }
 
   addCompliance(): void {
-    this.router.navigate(['/add-clause']);
+    this.router.navigate(['admin/add-clause']);
   }
 
   editClause(id: number): void {
-    this.router.navigate(['/edit-clause', id]);
+    this.router.navigate(['admin/edit-clause', id]);
   }
 
   viewClause(id: number): void {
-    this.router.navigate(['/view-clause', id]);
+    this.router.navigate(['admin/view-clause', id]);
   }
 }

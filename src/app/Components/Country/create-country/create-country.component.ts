@@ -31,7 +31,7 @@ export class CreateCountryComponent {
     this.countryService.createCountry(newCountry).subscribe({
       next: () => {
         this.toastr.success('Country added successfully!', 'Success');
-        this.router.navigate(['/country']);
+        this.router.navigate(['admin/country']);
       },
       error: (err) => {
         console.error('Error adding country:', err);
@@ -42,6 +42,6 @@ export class CreateCountryComponent {
   }
 
   goBack(): void {
-    this.router.navigate(['/country']);
+    this.router.navigate(['admin/country']);
   }
 }

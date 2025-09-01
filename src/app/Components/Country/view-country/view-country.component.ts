@@ -38,6 +38,6 @@ export class ViewCountryComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/country']);
+    this.router.navigate(['admin/country']);
   }
 }

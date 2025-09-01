@@ -50,7 +50,7 @@ export class EditCountryComponent implements OnInit {
       next: () => {
         this.isSubmitting = false;
         this.toastr.success('Country updated successfully!', 'Success');
-        this.router.navigate(['/country']);
+        this.router.navigate(['admin/country']);
       },
       error: (err) => {
         console.error('Error updating country', err);
@@ -61,6 +61,6 @@ export class EditCountryComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/country']);
+    this.router.navigate(['admin/country']);
   }
 }

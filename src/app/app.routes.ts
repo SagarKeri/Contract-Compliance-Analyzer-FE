@@ -17,6 +17,7 @@ import { CreateClauseComponent } from './Components/Clause/create-clause/create-
 import { ViewClauseComponent } from './Components/Clause/view-clause/view-clause.component';
 import { EditClauseComponent } from './Components/Clause/edit-clause/edit-clause.component';
 import { AdminPersonaComponent } from './Components/admin-persona/admin-persona.component';
+<<<<<<< Updated upstream
 
 export const routes: Routes = [
   { path: '', component: AnalyzeContractComponent },
@@ -38,4 +39,36 @@ export const routes: Routes = [
   { path: 'edit-clause/:id', component: EditClauseComponent },
   { path: 'admin', component: AdminPersonaComponent },
   { path: '', redirectTo: '', pathMatch: 'full' }
+=======
+import { ErrorPageComponent } from './shared/error-page/error-page.component';
+
+export const routes: Routes = [
+  { path: '', redirectTo: '/analyze', pathMatch: 'full' },
+  { path: 'analyze', component: AnalyzeContractComponent },
+
+  {
+    path: 'admin',
+    component: AdminPersonaComponent,
+    children: [
+      { path: 'country', component: IndexCountryComponent },
+      { path: 'add-country', component: CreateCountryComponent },
+      { path: 'view-country/:id', component: ViewCountryComponent },
+      { path: 'edit-country/:id', component: EditCountryComponent },
+
+      { path: 'domain', component: IndexDomainComponent },
+      { path: 'add-domain', component: CreateDomainComponent },
+      { path: 'view-domain/:id', component: ViewDomainComponent },
+      { path: 'edit-domain/:id', component: EditDomainComponent },
+
+      { path: 'clause', component: IndexClauseComponent },
+      { path: 'add-clause', component: CreateClauseComponent },
+      { path: 'view-clause/:id', component: ViewClauseComponent },
+      { path: 'edit-clause/:id', component: EditClauseComponent },
+
+      // default inside admin
+      { path: '', redirectTo: 'country', pathMatch: 'full' },
+    ],
+  },
+  { path: '**', component: ErrorPageComponent },
+>>>>>>> Stashed changes
 ];

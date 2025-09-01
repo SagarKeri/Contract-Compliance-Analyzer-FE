@@ -51,7 +51,7 @@ export class CreateDomainComponent implements OnInit {
     this.domainService.createDomain(newDomain).subscribe({
       next: () => {
         this.toastr.success('Domain added successfully', 'Success');
-        this.router.navigate(['/domain']);
+        this.router.navigate(['admin/domain']);
       },
       error: (err) => {
         console.error('Error creating domain:', err);
@@ -62,6 +62,6 @@ export class CreateDomainComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/domain']);
+    this.router.navigate(['admin/domain']);
   }
 }
