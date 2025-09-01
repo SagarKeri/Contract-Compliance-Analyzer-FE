@@ -1,4 +1,20 @@
-/* Optional custom styling if needed */
+/* Smooth scrollbar */
+#chatContainer::-webkit-scrollbar {
+  width: 6px;
+}
+
+#chatContainer::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+#chatContainer {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,0,0,0.2) transparent;
+}
+
+
+/* Optional custom styling if needed
 #chatContainer::-webkit-scrollbar {
   width: 6px;
 }
@@ -6,7 +22,11 @@
 #chatContainer::-webkit-scrollbar-thumb {
   background-color: rgba(0,0,0,0.2);
   border-radius: 3px;
+<<<<<<< Updated upstream
 }
 
 
 
+=======
+} */
+>>>>>>> Stashed changes

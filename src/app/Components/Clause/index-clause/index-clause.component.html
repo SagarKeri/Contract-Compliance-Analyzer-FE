@@ -10,54 +10,56 @@
     </div>
 
     <div class="card-body">
-      <table class="table table-bordered table-hover">
-        <thead class="table-light">
-          <tr>
-            <th>#</th>
-            <th>Clause Name</th>
-            <th>Clause Text</th>
-            <th>Domain</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            *ngFor="
-              let clause of clauses
-                | paginate : { itemsPerPage: 5, currentPage: p };
-              let i = index
-            "
-          >
-            <td>{{ (p - 1) * 5 + i + 1 }}</td>
-            <td>{{ clause.clause_name }}</td>
-            <td>{{ clause.clause_text }}</td>
-            <td>{{ clause.domain_name }}</td>
-            <td class="w-20">
-              <button
-                class="btn btn-outline-info btn-sm me-1"
-                (click)="viewClause(clause._id || 0)"
-              >
-                <i class="bi bi-eye"></i>
-              </button>
-              <button
-                class="btn btn-outline-warning btn-sm me-1"
-                (click)="editClause(clause._id || 0)"
-              >
-                <i class="bi bi-pencil-square"></i>
-              </button>
-              <button
-                class="btn btn-outline-danger btn-sm"
-                (click)="deleteClause(clause._id || 0)"
-              >
-                <i class="bi bi-trash"></i>
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-responsive" style="max-height: 65vh; overflow-y: auto">
+        <table class="table table-bordered table-hover mb-0">
+          <thead class="table-light sticky-top">
+            <tr>
+              <th style="width: 70px">S. No</th>
+              <th>Clause Name</th>
+              <th>Clause Text</th>
+              <th>Domain</th>
+              <th style="width: 120px">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="
+                let clause of clauses
+                  | paginate : { itemsPerPage: 5, currentPage: p };
+                let i = index
+              "
+            >
+              <td>{{ (p - 1) * 5 + i + 1 }}</td>
+              <td>{{ clause.clause_name }}</td>
+              <td>{{ clause.clause_text }}</td>
+              <td>{{ clause.domain_name }}</td>
+              <td>
+                <button
+                  class="btn btn-outline-info btn-sm me-1"
+                  (click)="viewClause(clause._id || 0)"
+                >
+                  <i class="bi bi-eye"></i>
+                </button>
+                <button
+                  class="btn btn-outline-warning btn-sm me-1"
+                  (click)="editClause(clause._id || 0)"
+                >
+                  <i class="bi bi-pencil-square"></i>
+                </button>
+                <button
+                  class="btn btn-outline-danger btn-sm"
+                  (click)="deleteClause(clause._id || 0)"
+                >
+                  <i class="bi bi-trash"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <!-- Pagination Controls -->
-      <div class="d-flex justify-content-center">
+      <div class="d-flex justify-content-center pt-1">
         <pagination-controls
           (pageChange)="p = $event"
           previousLabel="Prev"
@@ -67,11 +69,5 @@
         </pagination-controls>
       </div>
     </div>
-  </div>
-</div>
-
-<div class="text-center mt-4" *ngIf="isLoading">
-  <div class="spinner-border text-secondary" role="status">
-    <span class="visually-hidden">Loading...</span>
   </div>
 </div>

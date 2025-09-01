@@ -45,7 +45,7 @@
           >
             <option [ngValue]="null">-- Select Domain --</option>
             <option *ngFor="let domain of domains" [value]="domain._id">
-              {{ domain.domain_name }}
+              {{ domain.domain_name  }} ( {{domain.country_name}} )
             </option>
           </select>
         </div>

@@ -35,7 +35,7 @@ export class EditDomainComponent implements OnInit {
     this.domainId = Number(this.route.snapshot.paramMap.get('id'));
     if (!this.domainId) {
       this.toastr.error('Invalid domain ID', 'Error');
-      this.router.navigate(['/domains']);
+      this.router.navigate(['admin/domain']);
       return;
     }
 
@@ -59,7 +59,7 @@ export class EditDomainComponent implements OnInit {
       error: (err) => {
         console.error('Error loading domain:', err);
         this.toastr.error('Failed to load domain', 'Error');
-        this.router.navigate(['/domains']);
+        this.router.navigate(['admin/domain']);
       }
     });
   }
@@ -76,7 +76,7 @@ export class EditDomainComponent implements OnInit {
     this.domainService.updateDomain(this.domainId, updatedDomain).subscribe({
       next: () => {
         this.toastr.success('Domain updated successfully', 'Success');
-        this.router.navigate(['/domain']);
+        this.router.navigate(['admin/domain']);
       },
       error: (err) => {
         console.error('Error updating domain:', err);
@@ -87,6 +87,6 @@ export class EditDomainComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/domain']);
+    this.router.navigate(['admin/domain']);
   }
 }

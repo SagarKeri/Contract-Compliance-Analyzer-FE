@@ -54,4 +54,40 @@ body {
   font-size: 0.9rem;
 }
 
+@keyframes slideDiagonalIn {
+  from {
+    transform: translate(100%, 100%);
+    opacity: 0;
+  }
+  to {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideDiagonalOut {
+  from {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+  to {
+    transform: translate(100%, 100%);
+    opacity: 0;
+  }
+}
+
+/* Remove Bootstrap collapse default height animation */
+.chatbot-window.collapse {
+  display: none; /* hidden by default */
+}
+
+.chatbot-window.collapse.show {
+  display: block; /* show directly without Bootstrap's slide-down */
+  animation: slideDiagonalIn 0.5s ease-out forwards;
+}
+
+.chatbot-window.collapse.hiding {
+  animation: slideDiagonalOut 0.4s ease-in forwards;
+}
+
 
