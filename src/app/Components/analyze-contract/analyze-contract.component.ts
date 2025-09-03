@@ -47,7 +47,7 @@ export class AnalyzeContractComponent implements OnInit {
   analysisResult: ContractAnalysisResponse[] = [];
   pdfSrc: any;
   selectedFile: File | null = null;
-  selectedModel: number = 1; // Default: Mistral
+  selectedModel: number = 3; // Default: Mistral
   selectedCountry: number = 1; // Default: USA
   cacheKey: string | null = null;
   errorMessage: string | null = null;
@@ -421,4 +421,15 @@ export class AnalyzeContractComponent implements OnInit {
       this.selectedClauses = [];
     }
   }
+
+  isFormValid(): boolean {
+  return (
+    !!this.selectedCountry &&
+    !!this.selectedDomain &&
+    !!this.selectedModel &&
+    !!this.fileName&&
+    this.selectedClauses.length > 0
+  );
+}
+
 }

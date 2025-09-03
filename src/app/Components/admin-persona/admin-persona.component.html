@@ -9,8 +9,7 @@
               <a
                 class="nav-link"
                 routerLink="/admin/country"
-                routerLinkActive="active"
-                [routerLinkActiveOptions]="{ exact: true }"
+                [class.active]="isActive('country')"
               >
                 <i class="bi bi-flag"></i> &nbsp; Country
               </a>
@@ -19,8 +18,7 @@
               <a
                 class="nav-link"
                 routerLink="/admin/domain"
-                routerLinkActive="active"
-                [routerLinkActiveOptions]="{ exact: true }"
+                [class.active]="isActive('domain')"
               >
                 <i class="bi bi-globe"></i> &nbsp; Domain
               </a>
@@ -29,8 +27,7 @@
               <a
                 class="nav-link"
                 routerLink="/admin/clause"
-                routerLinkActive="active"
-                [routerLinkActiveOptions]="{ exact: true }"
+                [class.active]="isActive('clause')"
               >
                 <i class="bi bi-file-earmark-text"></i> &nbsp; Clause
               </a>

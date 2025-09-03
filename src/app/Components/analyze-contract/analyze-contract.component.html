@@ -1,5 +1,4 @@
 <app-clause-details [clauseId]="selectedClauseId"></app-clause-details>
-
 <div class="container-fluid mt-2 px-2 mb-4">
   <!-- Before File Upload: Centered Card -->
   <div *ngIf="!fileUploaded" class="d-flex justify-content-center">
@@ -146,7 +145,7 @@
         <div class="col-12">
           <button
             class="btn btn-primary w-100"
-            [disabled]="!fileName"
+            [disabled]="!isFormValid()"
             (click)="analyzeContract()"
           >
             Analyze
@@ -379,11 +378,11 @@
                               <p *ngIf="item.extracted_text">
                                 <strong>Extracted Clause:</strong><br />
                                 <span class="text-muted">{{
-                                  item.extracted_text
+                                  item.extracted_text.split('...')[0]
                                 }}</span>
                                 <button
                                   class="btn btn-sm btn-link text-primary ms-2"
-                                  (click)="highlightTextt(item.extracted_text)"
+                                  (click)="highlightTextt(item.extracted_text.split('...')[0])"
                                 >
                                   Jump in Pdf
                                   <i class="bi bi-arrow-up-right-square"></i>
@@ -638,7 +637,7 @@
     <div class="col-12">
       <button
         class="btn btn-primary w-100"
-        [disabled]="!fileName"
+        [disabled]="!isFormValid()"
         (click)="analyzeContract()"
       >
         Analyze
