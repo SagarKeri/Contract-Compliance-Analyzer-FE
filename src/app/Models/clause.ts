@@ -4,4 +4,6 @@ export interface Clause {
   clause_text: string;
   domain_id: number;
   domain_name?: string;
+  country_id?: number;
+  country_name?: string;
 }

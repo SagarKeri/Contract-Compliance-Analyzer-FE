@@ -90,4 +90,50 @@ body {
   animation: slideDiagonalOut 0.4s ease-in forwards;
 }
 
+.genie-button {
+  position: relative;
+  overflow: visible;
+}
+
+.genie-button.animate::before,
+.genie-button.animate::after,
+.genie-button.animate .ripple {
+  content: "";
+  position: absolute;
+  border: 2px solid #299e66;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  width: 60px;   /* button size */
+  height: 60px;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  pointer-events: none;
+  animation: ripple 3s infinite;
+  z-index: -1;
+}
+
+.genie-button.animate::after {
+  animation-delay: 1s;
+}
+
+.genie-button.animate .ripple {
+  animation-delay: 2s;
+}
+
+@keyframes ripple {
+  0% {
+    width: 60px;
+    height: 60px;
+    opacity: 0.6;
+  }
+  70% {
+    width: 200px;
+    height: 200px;
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
 

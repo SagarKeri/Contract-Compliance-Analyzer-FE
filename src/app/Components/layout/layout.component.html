@@ -9,7 +9,7 @@
   </div>
 </div>
 <div 
-  class="position-fixed bottom-0 end-0 m-3 bg-white shadow-lg rounded-circle d-flex align-items-center justify-content-center"
+  class="genie-button position-fixed bottom-0 end-0 m-3 bg-white shadow-lg rounded-circle d-flex align-items-center justify-content-center"
   style="width: 60px; height: 60px; cursor: pointer; z-index: 1050; border: 1px solid #0f6368;"
   data-bs-toggle="collapse"
   data-bs-target="#genieWindow"
@@ -17,8 +17,26 @@
   aria-controls="genieWindow"
 >
   <i class="bi bi-robot text-primary" style="font-size: 1.8rem;"></i>
+  <span class="ripple"></span>
 </div>
 
+
+
+<!-- Floating button -->
+<div 
+  id="genieButton"
+  class="genie-button animate position-fixed bottom-0 end-0 m-3 bg-white shadow-lg rounded-circle d-flex align-items-center justify-content-center"
+  style="width: 60px; height: 60px; cursor: pointer; z-index: 1050; border: 1px solid #0f6368;"
+  data-bs-toggle="collapse"
+  data-bs-target="#genieWindow"
+  aria-expanded="false"
+  aria-controls="genieWindow"
+>
+  <i class="bi bi-robot text-primary" style="font-size: 1.8rem;"></i>
+  <span class="ripple"></span>
+</div>
+
+<!-- Chatbot window -->
 <div 
   id="genieWindow"
   class="collapse chatbot-window position-fixed bottom-0 end-0 m-3 shadow-lg p-0 rounded bg-white"

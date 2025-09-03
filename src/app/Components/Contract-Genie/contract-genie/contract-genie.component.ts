@@ -47,63 +47,57 @@ export class ContractGenieComponent implements OnInit, AfterViewChecked {
     this.scrollToBottom();
   }
 
-  sendMessage() {
-    if (!this.userInput.trim()) {
-      alert('Please enter a question.');
-      return;
-    }
+ sendMessage() {
+  if (!this.userInput.trim()) {
+    alert('Please enter a question.');
+    return;
+  }
 
-    // Push user message
-    this.chatMessages.push({ sender: 'user', message: this.userInput });
+  // Push user message
+  this.chatMessages.push({ sender: 'user', message: this.userInput });
 
-    if (this.selectedFile) {
-      this.chatService
-        .askContractQuestion(this.selectedFile, this.userInput, '2')
-        .subscribe({
-          next: (res: any) => {
-            let botMessage = 'No response from bot.';
+  if (this.selectedFile) {
+    this.chatService
+      .askContractQuestion(this.selectedFile, this.userInput, '2')
+      .subscribe({
+        next: (res: ChatBotApiResponse) => {
+          let botMessage = 'No response from bot.';
+          console.log(res);
 
-            try {
-              const parsed =
-                typeof res.answer === 'string'
-                  ? JSON.parse(res.answer)
-                  : res.answer;
-              botMessage = parsed.response || botMessage;
-              botMessage = botMessage
-                  .replace(/\*\*/g, '')
-                  .replace(/\*/g, '')
-                  .replace(/-/g, '') 
-                  .replace(/\+/g, '') 
-                  .trim();
+          try {
+            let parsed;
 
-              
-              const prefix =
-                'Here are the termination clauses and payment terms:';
-              if (botMessage.startsWith(prefix)) {
-                botMessage = botMessage.replace(prefix, '').trim();
-              }
-            } catch (e) {
-              console.error('JSON parse error:', e);
+            // Only try parsing if it looks like JSON
+            if (typeof res.answer === 'string' && res.answer.trim().startsWith('{')) {
+              parsed = JSON.parse(res.answer);
+            } else {
+              parsed = res.answer;
             }
 
-            this.chatMessages.push({ sender: 'bot', message: botMessage });
-            this.scrollToBottomSmooth();
-          },
-          error: (err) => {
-            console.error('Error:', err);
-            this.chatMessages.push({
-              sender: 'bot',
-              message: '⚠️ Error fetching response.',
-            });
-          },
-        });
-    } else {
-      this.chatService.askContractMetadata(this.userInput, '2').subscribe({
-        next: (res: ChatBotApiResponse) => {
-          this.chatMessages.push({
-            sender: 'bot',
-            message: res.answer || 'No response from bot.',
-          });
+            if (typeof parsed === 'object') {
+              botMessage = parsed.response || botMessage;
+            } else {
+              botMessage = parsed || botMessage;
+            }
+
+            // Cleanup unwanted markdown characters
+            botMessage = botMessage
+              .replace(/\*\*/g, '')
+              .replace(/\*/g, '')
+              .replace(/-/g, '')
+              .replace(/\+/g, '')
+              .trim();
+
+            const prefix = 'Here are the termination clauses and payment terms:';
+            if (botMessage.startsWith(prefix)) {
+              botMessage = botMessage.replace(prefix, '').trim();
+            }
+          } catch (e) {
+            console.error('Parse error, using raw response:', e);
+            botMessage = typeof res.answer === 'string' ? res.answer : botMessage;
+          }
+
+          this.chatMessages.push({ sender: 'bot', message: botMessage });
           this.scrollToBottomSmooth();
         },
         error: (err) => {
@@ -114,10 +108,54 @@ export class ContractGenieComponent implements OnInit, AfterViewChecked {
           });
         },
       });
-    }
+  } else {
+    this.chatService.askContractMetadata(this.userInput, '2').subscribe({
+      next: (res: ChatBotApiResponse) => {
+        let botMessage = 'No response from bot.';
+        console.log(res);
 
-    this.userInput = '';
+        try {
+          let parsed;
+
+          if (typeof res.answer === 'string' && res.answer.trim().startsWith('{')) {
+            parsed = JSON.parse(res.answer);
+          } else {
+            parsed = res.answer;
+          }
+
+          if (typeof parsed === 'object') {
+            botMessage = parsed.response || botMessage;
+          } else {
+            botMessage = parsed || botMessage;
+          }
+
+          botMessage = botMessage
+            .replace(/\*\*/g, '')
+            .replace(/\*/g, '')
+            .replace(/-/g, '')
+            .replace(/\+/g, '')
+            .trim();
+        } catch (e) {
+          console.error('Parse error, using raw response:', e);
+          botMessage = typeof res.answer === 'string' ? res.answer : botMessage;
+        }
+
+        this.chatMessages.push({ sender: 'bot', message: botMessage });
+        this.scrollToBottomSmooth();
+      },
+      error: (err) => {
+        console.error('Error:', err);
+        this.chatMessages.push({
+          sender: 'bot',
+          message: '⚠️ Error fetching response.',
+        });
+      },
+    });
   }
+
+  this.userInput = '';
+}
+
 
   private scrollToBottom(): void {
     try {
