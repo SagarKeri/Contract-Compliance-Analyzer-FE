@@ -1,0 +1,50 @@
+<div class="container-fluid auth-bg d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+  <div class="card shadow-lg mb-5 " style="width: 400px;">
+    
+    <!-- Logo Section -->
+    <div class="text-center p-2">
+      <img
+        src="../../../assets/images/csgLogo.png"
+        alt="CSG Logo"
+        width="160"
+        height="50"
+        class="p-2"
+        style="background-color: white; border-radius: 8px;"
+      />
+    </div>
+
+    <!-- Tabs Section -->
+    <div class="card-header bg-white ">
+      <ul class="nav nav-tabs card-header-tabs">
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            [class.active]="currentTab === 'login'"
+            (click)="currentTab = 'login'"
+            style="cursor: pointer;"
+          >Login</a>
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            [class.active]="currentTab === 'signup'"
+            (click)="currentTab = 'signup'"
+            style="cursor: pointer;"
+          >Signup</a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Content Section -->
+    <div class="card-body">
+      <div [ngSwitch]="currentTab">
+        <div *ngSwitchCase="'login'">
+          <app-login></app-login>
+        </div>
+        <div *ngSwitchCase="'signup'">
+          <app-sign-up></app-sign-up>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

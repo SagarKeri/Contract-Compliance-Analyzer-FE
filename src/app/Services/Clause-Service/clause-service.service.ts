@@ -33,7 +33,7 @@ export class ClauseService {
   }
 
   // Delete Clause
-  deleteClause(id: number): Observable<any> {
+  deleteClause(id: string): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/${id}`);
   }
 

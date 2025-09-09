@@ -5,11 +5,12 @@ import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { Domain } from '../../../Models/domain';
 import { DomainService } from '../../../Services/Domain-Service/domain-service.service';
+import { ConfirmDialogComponent } from "../../../shared/confirm-dialog/confirm-dialog.component";
 
 @Component({
   selector: 'app-index-domain',
   standalone: true,
-  imports: [CommonModule, NgxPaginationModule],
+  imports: [CommonModule, NgxPaginationModule, ConfirmDialogComponent],
   templateUrl: './index-domain.component.html',
   styleUrls: ['./index-domain.component.css'],
 })
@@ -50,8 +51,8 @@ export class IndexDomainComponent implements OnInit {
     this.router.navigate(['admin/edit-domain', domain._id]);
   }
 
-  deleteDomain(domain: Domain): void {
-    this.domainService.deleteDomain(domain._id || 0).subscribe({
+  deleteDomain(domainId: string): void {
+    this.domainService.deleteDomain(domainId || '').subscribe({
       next: () => {
         this.loadDomains();
         this.toastr.success('Domain deleted successfully', 'Success');
@@ -62,4 +63,17 @@ export class IndexDomainComponent implements OnInit {
       },
     });
   }
+
+  showConfirmDialog = false;
+selectedUserId: string | null = null;
+
+openDeleteDialog(userId: string) {
+  this.selectedUserId = userId;
+  this.showConfirmDialog = true;
+}
+
+closeDialog() {
+  this.showConfirmDialog = false;
+  this.selectedUserId = null;
+}
 }

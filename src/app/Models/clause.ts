@@ -1,5 +1,5 @@
 export interface Clause {
-  _id?: number;
+  _id?: string;
   clause_name: string;
   clause_text: string;
   domain_id: number;

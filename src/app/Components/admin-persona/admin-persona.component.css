@@ -59,6 +59,11 @@
   color: #fff !important;
 }
 
+.sidebar-card .nav-link {
+  color: #0f6368 !important;
+}
+
+
 /* Active link gets Bootstrap primary bg */
 .sidebar-card .nav-link.active {
   background-color:#0f6368 !important;

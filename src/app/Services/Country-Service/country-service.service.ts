@@ -29,7 +29,7 @@ export class CountryService {
     return this.http.put<any>(`${this.apiUrl}/${id}`, country);
   }
 
-  deleteCountry(id: number): Observable<any> {
+  deleteCountry(id: string): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/${id}`);
   }
 }

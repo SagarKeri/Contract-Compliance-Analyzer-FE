@@ -1,0 +1,60 @@
+<form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+  <!-- First Name -->
+  <div class="mb-3">
+    <label for="first_name" class="form-label fw-bold text-secondary">First Name</label>
+    <input type="text" class="form-control" id="first_name" formControlName="first_name" required>
+    <div *ngIf="signupForm.get('first_name')?.hasError('required') && signupForm.get('first_name')?.touched" class="text-danger">
+      First name is required
+    </div>
+  </div>
+
+  <!-- Last Name -->
+  <div class="mb-3">
+    <label for="last_name" class="form-label fw-bold text-secondary">Last Name</label>
+    <input type="text" class="form-control" id="last_name" formControlName="last_name" required>
+    <div *ngIf="signupForm.get('last_name')?.hasError('required') && signupForm.get('last_name')?.touched" class="text-danger">
+      Last name is required
+    </div>
+  </div>
+
+  <!-- Email -->
+  <div class="mb-3">
+    <label for="email" class="form-label fw-bold text-secondary">Email</label>
+    <input type="email" class="form-control" id="email" formControlName="email" required>
+    <div *ngIf="signupForm.get('email')?.hasError('required') && signupForm.get('email')?.touched" class="text-danger">
+      Email is required
+    </div>
+    <div *ngIf="signupForm.get('email')?.hasError('email') && signupForm.get('email')?.touched" class="text-danger">
+      Invalid email format
+    </div>
+  </div>
+
+  <!-- Password -->
+  <div class="mb-3">
+    <label for="password" class="form-label fw-bold text-secondary">Password</label>
+    <input type="password" class="form-control" id="password" formControlName="password" required>
+    <div *ngIf="signupForm.get('password')?.hasError('required') && signupForm.get('password')?.touched" class="text-danger">
+      Password is required
+    </div>
+  </div>
+
+  <!-- Confirm Password -->
+  <div class="mb-3">
+    <label for="confirm_password" class="form-label fw-bold text-secondary">Confirm Password</label>
+    <input type="password" class="form-control" id="confirm_password" formControlName="confirm_password" required>
+    <div *ngIf="signupForm.get('confirm_password')?.hasError('required') && signupForm.get('confirm_password')?.touched" class="text-danger">
+      Confirm Password is required
+    </div>
+    <div *ngIf="signupForm.hasError('passwordMismatch') && signupForm.get('confirm_password')?.touched" class="text-danger">
+      Passwords do not match
+    </div>
+  </div>
+
+  <!-- Submit -->
+  <div class="d-grid">
+    <button type="submit" class="btn btn-primary" [disabled]="signupForm.invalid">Sign Up</button>
+  </div>
+
+  <!-- Error message -->
+  <div class="text-danger text-center mt-3" *ngIf="errorMessage">{{ errorMessage }}</div>
+</form>

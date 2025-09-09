@@ -5,15 +5,17 @@ import { Country } from '../../../Models/country';
 import { CountryService } from '../../../Services/Country-Service/country-service.service';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { ConfirmDialogComponent } from "../../../shared/confirm-dialog/confirm-dialog.component";
 
 @Component({
   selector: 'app-index-country',
   standalone: true,
-  imports: [CommonModule, NgxPaginationModule],
+  imports: [CommonModule, NgxPaginationModule, ConfirmDialogComponent],
   templateUrl: './index-country.component.html',
   styleUrls: ['./index-country.component.css'],
 })
 export class IndexCountryComponent implements OnInit {
+
   countries: Country[] = [];
   page: number = 1; // current page
   itemsPerPage: number = 5; // rows per page
@@ -23,6 +25,19 @@ export class IndexCountryComponent implements OnInit {
     private router: Router,
     private toastr: ToastrService
   ) {}
+
+  showConfirmDialog = false;
+selectedCountryId: string | null = null;
+
+  openDeleteDialog(countryId: string) {
+    this.selectedCountryId = countryId;
+    this.showConfirmDialog = true;
+  }
+
+  closeDialog() {
+    this.showConfirmDialog = false;
+    this.selectedCountryId = null;
+  }
 
   ngOnInit(): void {
     this.loadCountries();
@@ -47,8 +62,8 @@ export class IndexCountryComponent implements OnInit {
     this.router.navigate(['admin/edit-country', country._id]);
   }
 
-  deleteCountry(country: Country): void {
-      this.countryService.deleteCountry(country._id || 0).subscribe({
+  deleteCountry(countryId: string): void {
+      this.countryService.deleteCountry(countryId || '').subscribe({
         next: () => {
           this.loadCountries();
           this.toastr.success('Country deleted successfully', 'Success');

@@ -18,14 +18,27 @@ import { ViewClauseComponent } from './Components/Clause/view-clause/view-clause
 import { EditClauseComponent } from './Components/Clause/edit-clause/edit-clause.component';
 import { AdminPersonaComponent } from './Components/admin-persona/admin-persona.component';
 import { ErrorPageComponent } from './shared/error-page/error-page.component';
+import { AuthLayoutComponent } from './Components/auth-layout/auth-layout.component';
+import { AuthGuard } from './Guards/auth-Guard';
+import { UserIndexComponent } from './Components/user/user-index/user-index.component';
+import { PastAnalysisComponent } from './Components/past-analysis/past-analysis.component';
+import { AuthRedirectGuard } from './Guards/auth-redirect.guard';
 
 export const routes: Routes = [
-  { path: '', redirectTo: '/analyze', pathMatch: 'full' },
-  { path: 'analyze', component: AnalyzeContractComponent },
+  { path: '', redirectTo: 'auth', pathMatch: 'full' },
+  { path: 'auth', component: AuthLayoutComponent ,canActivate:[AuthRedirectGuard]},
 
+  {
+    path: 'analyze',
+    component: AnalyzeContractComponent,
+    canActivate: [AuthGuard],
+  },
+  { path: 'my-analysis', component: PastAnalysisComponent },
   {
     path: 'admin',
     component: AdminPersonaComponent,
+    canActivate: [AuthGuard],
+    data: { roles: [1] },
     children: [
       { path: 'country', component: IndexCountryComponent },
       { path: 'add-country', component: CreateCountryComponent },
@@ -35,12 +48,21 @@ export const routes: Routes = [
       { path: 'add-domain', component: CreateDomainComponent },
       { path: 'view-domain/:id', component: ViewDomainComponent },
       { path: 'edit-domain/:id', component: EditDomainComponent },
+
+      { path: 'compliance', component: IndexComplianceComponent },
+      { path: 'add-compliance', component: CreateComplianceComponent },
+      { path: 'view-compliance/:id', component: ViewComplianceComponent },
+      { path: 'edit-compliance/:id', component: EditComplianceComponent },
+
       { path: 'clause', component: IndexClauseComponent },
       { path: 'add-clause', component: CreateClauseComponent },
       { path: 'view-clause/:id', component: ViewClauseComponent },
       { path: 'edit-clause/:id', component: EditClauseComponent },
-      { path: '', redirectTo: 'country', pathMatch: 'full' },
+
+      { path: 'user', component: UserIndexComponent },
+      { path: '', redirectTo: 'country', pathMatch: 'full' }, // default child
     ],
   },
-  { path: '**', component: ErrorPageComponent },
+
+  { path: '**', component: ErrorPageComponent }, // catch-all
 ];
