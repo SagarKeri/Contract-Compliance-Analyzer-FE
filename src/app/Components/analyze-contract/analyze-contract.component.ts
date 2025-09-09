@@ -1,6 +1,6 @@
-import { Component, OnInit, effect } from '@angular/core';
+import { Component, OnDestroy, OnInit, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
+import { ActivatedRoute, RouterOutlet, RouterLink } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 
 import {
@@ -27,6 +27,8 @@ import { ClauseService } from '../../Services/Clause-Service/clause-service.serv
 import { ContractGenieComponent } from '../Contract-Genie/contract-genie/contract-genie.component';
 import { ClauseDetailsComponent } from '../clause-details/clause-details.component';
 import { ApplicationServiceService } from '../../Services/application-service/application-service.service';
+import { ContractCacheServiceService } from '../../Services/contract-cache-service/contract-cache-service.service';
+import { ContractCache } from '../../Models/contract-cache-response';
 
 @Component({
   selector: 'app-analyze-contract',
@@ -38,17 +40,18 @@ import { ApplicationServiceService } from '../../Services/application-service/ap
     FormsModule,
     ContractGenieComponent,
     ClauseDetailsComponent,
-  ],
+    RouterLink
+],
   templateUrl: './analyze-contract.component.html',
   styleUrl: './analyze-contract.component.css',
 })
-export class AnalyzeContractComponent implements OnInit {
+export class AnalyzeContractComponent implements OnInit, OnDestroy {
   fileName: string = '';
   analysisResult: ContractAnalysisResponse[] = [];
   pdfSrc: any;
   selectedFile: File | null = null;
   selectedModel: number = 3; // Default: Mistral
-  selectedCountry: number = 1; // Default: USA
+  selectedCountry: number | null = null; // Default: USA
   cacheKey: string | null = null;
   errorMessage: string | null = null;
   feedbackMessages: { [key: string]: string } = {};
@@ -68,6 +71,7 @@ export class AnalyzeContractComponent implements OnInit {
   selectedClauseId: number = 0;
   selectAll: boolean = false;
   description: string = '';
+  isBackBtnEnable:boolean=false;
 
   constructor(
     private countryService: CountryService,
@@ -78,41 +82,122 @@ export class AnalyzeContractComponent implements OnInit {
     private ngxExtendedPdfViewerService: NgxExtendedPdfViewerService,
     private notificationService: PDFNotificationService,
     private appService: ApplicationServiceService,
+    private contractCacheService: ContractCacheServiceService,
+    private route: ActivatedRoute
   ) {
     // Wait for PDF.js initialization
     effect(() => {
-    // 🔹 Handle PDF.js init
-    this.PDFViewerApplication = this.notificationService.onPDFJSInitSignal();
-    if (this.PDFViewerApplication) {
-      console.log('PDFViewerApplication initialized');
-      this.PDFViewerApplication.eventBus?.on(
-        'renderedtextlayerhighlights',
-        (event: RenderedTextLayerHighlights) => {
-          console.log('Applying custom highlights');
-          // event.highlights.forEach((highlight) => {
-          //   highlight.classList.add('highlighted-clause');
-          //   highlight.classList.remove('highlight'); 
-          // });
-        }
-      );
-    } else {
-      console.log('PDFViewerApplication not yet initialized');
-    }
+      // 🔹 Handle PDF.js init
+      this.PDFViewerApplication = this.notificationService.onPDFJSInitSignal();
+      if (this.PDFViewerApplication) {
+        console.log('PDFViewerApplication initialized');
+        this.PDFViewerApplication.eventBus?.on(
+          'renderedtextlayerhighlights',
+          (event: RenderedTextLayerHighlights) => {
+            console.log('Applying custom highlights');
+            // event.highlights.forEach((highlight) => {
+            //   highlight.classList.add('highlighted-clause');
+            //   highlight.classList.remove('highlight');
+            // });
+          }
+        );
+      } else {
+        console.log('PDFViewerApplication not yet initialized');
+      }
 
-    this.appService.file$
-      //.pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((file) => {
-        this.selectedFile = file;
-        this.fileName = file ? file.name : '';
-        if (file) {
-          this.pdfSrc = URL.createObjectURL(file);
-        }
-      });
-  });
+      this.appService.file$
+        .subscribe((file) => {
+          this.selectedFile = file;
+          this.fileName = file ? file.name : '';
+          if (file) {
+            this.pdfSrc = URL.createObjectURL(file);
+          }
+        });
+    });
   }
 
   ngOnInit(): void {
-    this.loadCountries();
+  this.loadCountries();
+
+  this.route.queryParams.subscribe((params) => {
+    const cacheKey = params['cacheKey'];
+    if (cacheKey) {
+      this.loadCachedAnalysis(cacheKey);
+      this.downloadContract(cacheKey);
+    } else {
+      // 🔹 Reset UI when no cacheKey is provided
+      this.analysisResult = [];
+      this.description = '';
+      this.fileUploaded = false;
+      this.selectedFile = null;
+      this.selectedCountry=null;
+      this.selectedDomain=null;
+      this.pdfSrc = null;
+      this.cacheKey = null;
+      this.selectedClauses = [];
+      this.clauses =[];
+      this.clauses.forEach((c) => (c.selected = false));
+      this.selectAll = false;
+    }
+  });
+}
+
+
+  loadCachedAnalysis(cacheKey: string): void {
+    this.contractCacheService.getContractById(cacheKey).subscribe({
+      next: (response: any) => {
+        console.log(response);
+        this.isBackBtnEnable=true;
+        this.analysisResult = response.data.analysis.analysis || [];
+        this.description = response.data.analysis.description || '';
+        this.fileUploaded = true;
+        this.selectedFile = response.file || null;
+        this.selectedCountry = response.data.country_id;
+        if (this.selectedCountry) this.loadDomains(this.selectedCountry);
+        this.selectedDomain = response.data.domain_id;
+        this.loadClauses();
+        this.selectedClauses = response.data.clauses;
+        console.log('---------------------------------');
+        console.log(this.selectedClauses);
+        this.onSingleClauseChange();
+        //this.selectClausesByIds(response.data.clauses);
+        if (this.selectedFile) {
+          this.pdfSrc = URL.createObjectURL(this.selectedFile);
+        }
+        this.toastr.success('Loaded cached analysis', 'Success');
+      },
+      error: (err) => {
+        console.error(err);
+        this.toastr.error('Failed to load cached analysis');
+      },
+    });
+  }
+
+ downloadContract(cacheKey: string) {
+  this.contractCacheService.downloadContract(cacheKey).subscribe((response) => {
+    const contentDisposition = response.headers.get('content-disposition');
+    let fileName = 'unknown.pdf';
+
+    if (contentDisposition) {
+      const matches = /filename="?([^"]+)"?/.exec(contentDisposition);
+      if (matches?.[1]) {
+        fileName = matches[1];
+      }
+    }
+
+    this.selectedFile = new File([response.body!], fileName, {
+      type: 'application/pdf',
+    });
+
+    this.pdfSrc = URL.createObjectURL(this.selectedFile);
+    this.appService.setFile(this.selectedFile);
+
+    console.log('✅ Loaded file:', fileName);
+  });
+}
+
+ngOnDestroy(): void {
+    this.isBackBtnEnable = false;
   }
 
   onFileSelected(event: Event): void {
@@ -162,24 +247,21 @@ export class AnalyzeContractComponent implements OnInit {
       return;
     }
 
-    console.log(this.selectedClauses);
-
     this.feedbackMessages = {};
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const userId = user._id;
 
     this.contractService
       .analyzeContract(
         this.selectedFile,
         this.selectedClauses,
         this.selectedModel,
-        this.selectedCountry
+        this.selectedCountry || 0,
+        this.selectedDomain || 0,
+        userId
       )
       .subscribe({
         next: (response: any) => {
-          // if (Array.isArray(response.analysis)) {
-          //   this.fileUploaded = true;
-          //   this.analysisResult = response.analysis;
-          //   this.restoreSelectedClauses();
-          // } else {
           console.log(response);
           this.fileUploaded = true;
           this.analysisResult = response.analysis.analysis || [];
@@ -189,7 +271,6 @@ export class AnalyzeContractComponent implements OnInit {
           this.feedbackSubmitted = false;
           this.restoreSelectedClauses();
           this.toastr.success('Contract Successfully Analyzed.', 'Success!');
-          //}
         },
         error: (err) => {
           this.toastr.error('Error analyzing contract: ' + err.message);
@@ -369,6 +450,7 @@ export class AnalyzeContractComponent implements OnInit {
       );
     }
   }
+
   restoreSelectedClauses(): void {
     if (!this.selectedClauses || this.selectedClauses.length === 0) return;
 
@@ -407,29 +489,26 @@ export class AnalyzeContractComponent implements OnInit {
       .filter((c) => c.selected)
       .map((c) => c._id);
 
-    this.selectAll = this.clauses.every((c) => c.selected);
+    this.selectAll =
+      this.clauses.length > 0 && this.clauses.every((c) => c.selected);
   }
 
   toggleSelectAll(event: any): void {
     this.selectAll = event.target.checked;
 
-    if (this.selectAll) {
-      this.clauses.forEach((c) => (c.selected = true));
-      this.selectedClauses = this.clauses.map((c) => c._id);
-    } else {
-      this.clauses.forEach((c) => (c.selected = false));
-      this.selectedClauses = [];
-    }
+    this.clauses.forEach((c) => (c.selected = this.selectAll));
+
+    this.selectedClauses = this.selectAll ? this.clauses.map((c) => c._id) : [];
   }
 
   isFormValid(): boolean {
-  return (
-    !!this.selectedCountry &&
-    !!this.selectedDomain &&
-    !!this.selectedModel &&
-    !!this.fileName&&
-    this.selectedClauses.length > 0
-  );
-}
+    return (
+      !!this.selectedCountry &&
+      !!this.selectedDomain &&
+      !!this.selectedModel &&
+      !!this.fileName &&
+      this.selectedClauses.length > 0
+    );
+  }
 
 }

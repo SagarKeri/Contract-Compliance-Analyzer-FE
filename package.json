@@ -19,6 +19,7 @@
     "@angular/platform-browser-dynamic": "^18.0.0",
     "@angular/router": "^18.0.0",
     "bootstrap-icons": "^1.13.1",
+    "bootswatch": "^5.3.7",
     "ng2-pdf-viewer": "^10.4.0",
     "ngx-extended-pdf-viewer": "^24.3.1-alpha.1",
     "ngx-pagination": "^6.0.3",

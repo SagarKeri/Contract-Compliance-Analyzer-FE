@@ -124,3 +124,42 @@ textarea:focus {
   border-color: #0f6368;
   box-shadow: 0 4px 10px rgba(15, 99, 104, 0.4);
 }
+
+
+.nav-link{
+  color:#0f6368 !important;
+}
+
+
+.nav-tabs .nav-link.active {
+  font-weight: 700 !important;           /* optional: make it bold */
+}
+
+.nav-link:hover {
+  background-color: #299e66 !important;
+  color: white !important; /* Bootstrap primary color */
+  font-weight: 700 !important;           /* optional: make it bold */
+}
+
+.nav-link.active:hover {
+  color: #299e66 !important;
+  background-color: white !important;
+  font-weight: 700 !important;
+}
+
+.dropdown-item.active, .dropdown-item:active{
+  background-color: #299e66 !important;
+  color: white !important;
+}
+
+
+.table-light {
+   --bs-table-color: #fff;
+  --bs-table-bg: #0f6368 ; 
+ --bs-table-border-color: #0f6368;
+}
+
+.form-check-input:checked {
+    background-color:#299e66 !important;
+}
+

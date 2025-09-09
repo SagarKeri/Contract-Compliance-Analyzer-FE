@@ -18,13 +18,17 @@ export class ContractAnalysisServiceService {
   file: File,
   clauses: number[],
   model:number,
-  country:number
+  country:number,
+  domain:number,
+  userId:string
 ): Observable<ApiResponse> {
   const formData = new FormData();
   formData.append('file', file);
   formData.append('clauses', JSON.stringify(clauses));
   formData.append('model', model.toString());
   formData.append('country_id', country.toString());
+  formData.append('domain_id', domain.toString());
+  formData.append('user_id', userId);
 
   return this.http
     .post<

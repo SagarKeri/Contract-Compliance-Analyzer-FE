@@ -38,7 +38,7 @@ export class DomainService {
   }
 
   // Delete a domain
-  deleteDomain(id: number): Observable<any> {
+  deleteDomain(id: string): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/${id}`);
   }
 }

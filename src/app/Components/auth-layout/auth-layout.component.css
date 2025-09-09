@@ -1,0 +1,55 @@
+
+
+.card {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-body {
+  padding: 2rem;
+  width: 400px;
+}
+
+.card {
+  transition: all 0.4s ease-in-out;
+  opacity: 0.9;              /* default slightly faded */
+  transform: scale(1);       /* normal size */
+}
+
+.card:hover {
+  opacity: 1;                /* full visible on hover */
+  transform: scale(1.03);    /* slight zoom effect */
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2); /* stronger shadow */
+}
+
+
+html, body {
+  height: 100%;  
+  margin: 0;           /* remove default spacing */
+  padding: 0;
+  overflow: hidden;    /* disable both scrollbars */
+}
+
+.auth-bg {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Smooth diagonal gradient transition */
+  background: linear-gradient(135deg, #0f6368, #299e66);
+}
+
+
+.card-header{
+  border-bottom:var(--bs-card-border-width) solid #0f6368;
+}
+
+.card-header-tabs .nav-link.active {
+    border-bottom-color: #ffff;
+}
+
+.nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+    border-color: #0f6368;
+    border-bottom-color: #ffff;
+
+}

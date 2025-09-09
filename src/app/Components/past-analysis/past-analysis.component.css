@@ -1,0 +1,22 @@
+.table {
+  font-size: 14px;
+}
+
+.badge {
+  font-size: 12px;
+}
+
+/* Summary Card Hover Effect */
+.summary-card {
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+}
+.summary-card:hover {
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0px 8px 18px rgba(0, 0, 0, 0.2);
+}
+
+/* .gradient-bg-diagonal {
+  background: linear-gradient(135deg, #0f6368, #42b2b8);
+} */
+

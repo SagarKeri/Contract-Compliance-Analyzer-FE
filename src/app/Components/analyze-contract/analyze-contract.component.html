@@ -1,6 +1,7 @@
 <app-clause-details [clauseId]="selectedClauseId"></app-clause-details>
 <div class="container-fluid mt-2 px-2 mb-4">
   <!-- Before File Upload: Centered Card -->
+<!-- <button class="btn btn-outline-primary mb-2" routerLink="/my-analysis"><i class="bi bi-arrow-left"></i> Back To Past Analysis List</button> -->
   <div *ngIf="!fileUploaded" class="d-flex justify-content-center">
     <div class="card card-border shadow-lg p-4 w-100" style="max-width: 600px">
       <div class="row g-3 align-items-center">
@@ -609,7 +610,7 @@
               type="checkbox"
               [id]="'clause' + clause._id"
               [(ngModel)]="clause.selected"
-              (change)="onClauseChange(clause._id, $event)"
+              (change)="onSingleClauseChange()"
               style="cursor: pointer"
             />
             <label

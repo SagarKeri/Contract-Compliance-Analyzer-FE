@@ -3,11 +3,12 @@ import { HeaderComponent } from "../../shared/header/header.component";
 import { RouterOutlet } from '@angular/router';
 import { AnalyzeContractComponent } from "../analyze-contract/analyze-contract.component";
 import { ContractGenieComponent } from "../Contract-Genie/contract-genie/contract-genie.component";
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [HeaderComponent, AnalyzeContractComponent, RouterOutlet, ContractGenieComponent],
+  imports: [HeaderComponent, AnalyzeContractComponent, RouterOutlet, ContractGenieComponent, CommonModule],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.css'
 })
@@ -26,5 +27,9 @@ export class LayoutComponent implements AfterViewInit {
         genieButton.classList.add('animate');
       });
     }
+  }
+
+  get isLoggedIn(): boolean {
+    return !!localStorage.getItem('authToken');
   }
 }
