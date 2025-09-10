@@ -1,15 +1,14 @@
 <app-clause-details [clauseId]="selectedClauseId"></app-clause-details>
 <div class="container-fluid mt-2 px-2 mb-4">
   <!-- Before File Upload: Centered Card -->
-<!-- <button class="btn btn-outline-primary mb-2" routerLink="/my-analysis"><i class="bi bi-arrow-left"></i> Back To Past Analysis List</button> -->
   <div *ngIf="!fileUploaded" class="d-flex justify-content-center">
     <div class="card card-border shadow-lg p-4 w-100" style="max-width: 600px">
       <div class="row g-3 align-items-center">
         <!-- File Upload -->
         <div class="col-12">
-          <label for="contractUpload" class="btn btn-outline-primary w-100"
-            >Upload Contract</label
-          >
+          <label for="contractUpload" class="btn btn-outline-primary w-100">
+            Upload Contract
+          </label>
           <input
             type="file"
             id="contractUpload"
@@ -17,8 +16,17 @@
             accept="application/pdf"
             hidden
           />
-          <div *ngIf="fileName" class="mt-2 text-secondary fw-bold small">
-            Selected File: {{ fileName }}
+
+          <div
+            *ngIf="fileName"
+            class="mt-2 d-flex align-items-center text-secondary fw-bold small"
+          >
+            <span class="me-2">Selected File: {{ fileName }}</span>
+            <i
+              class="bi bi-x-circle text-danger"
+              style="cursor: pointer; font-size: 1.2rem"
+              (click)="removeFile()"
+            ></i>
           </div>
         </div>
 
@@ -33,7 +41,6 @@
             [(ngModel)]="selectedModel"
             (change)="onModelChange($event)"
           >
-
             <option [value]="3">Llama 3.1</option>
             <!-- <option [value]="2">Gemini-2.5-pro</option> -->
           </select>
@@ -379,11 +386,15 @@
                               <p *ngIf="item.extracted_text">
                                 <strong>Extracted Clause:</strong><br />
                                 <span class="text-muted">{{
-                                  item.extracted_text.split('...')[0]
+                                  item.extracted_text.split("...")[0]
                                 }}</span>
                                 <button
                                   class="btn btn-sm btn-link text-primary ms-2"
-                                  (click)="highlightTextt(item.extracted_text.split('...')[0])"
+                                  (click)="
+                                    highlightTextt(
+                                      item.extracted_text.split('...')[0]
+                                    )
+                                  "
                                 >
                                   Jump in Pdf
                                   <i class="bi bi-arrow-up-right-square"></i>
@@ -494,10 +505,8 @@
     </div>
   </div>
 
-  <!-- Error Message -->
   <p *ngIf="errorMessage" class="text-danger mt-3">{{ errorMessage }}</p>
 
-  <!-- Selection Card Template -->
   <ng-template #selectionCard>
     <!-- Place the same selection/upload card content here -->
     <div class="col-12">
@@ -644,5 +653,10 @@
         Analyze
       </button>
     </div>
+    <div class="col-12">
+  <button class="btn btn-outline-primary w-100 " routerLink="/my-analysis" *ngIf="isCachedAnalysis"><i class="bi bi-arrow-left"></i> Back To DashBoard</button>
+
+    </div>
+
   </ng-template>
 </div>

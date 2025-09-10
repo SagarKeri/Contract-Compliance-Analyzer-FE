@@ -137,3 +137,88 @@ body {
   }
 }
 
+#sidebar {
+  transition: width 0.3s;
+}
+
+#sidebar.collapsed {
+  width: 60px !important;
+  overflow: hidden;
+}
+
+.custom-navbar {
+  background-color: #0f6368 !important;
+  margin-left: 250px;   /* offset by sidebar width */
+  width: calc(100% - 250px); /* take only remaining width */
+}
+
+/* Sidebar menu hover effect */
+#sidebar ul li a {
+  position: relative;
+  border-radius: 4px;
+  transition: all 0.2s ease-in-out;
+}
+
+#sidebar ul li a:hover {
+  background-color: #f0f0f0; /* full item bg */
+  color: #299e66 ; /* optional: text highlight */
+}
+
+/* Left indicator on hover */
+#sidebar ul li a::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 20%;
+  height: 60%;
+  width: 4px;
+  background-color: transparent;
+  border-radius: 0 4px 4px 0;
+  transition: background-color 0.2s ease-in-out;
+}
+
+#sidebar ul li a:hover::before {
+  background-color: #299e66; /* Bootstrap primary color */
+}
+
+.sidebar-toggle-btn {
+  position: absolute;
+  top: 10px; /* adjust vertical position */
+  left: 250px; /* expanded sidebar width */
+  width: 32px;
+  height: 32px;
+  background-color: #ffffff;
+  border: 2px solid #299e66;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateX(-50%); /* centers half on sidebar, half on header */
+  transition: left 0.3s ease;
+}
+
+/* When sidebar is collapsed */
+.collapsed + .sidebar-toggle-btn {
+  left: 65px; /* collapsed sidebar width */
+}
+
+/* Active link styles */
+#sidebar a.active {
+  background-color: #f0f0f0;       /* same as hover background */
+  border-left: 4px solid #299e66;  /* primary blue strip */
+  font-weight: bold;
+  color: #299e66 !important;
+}
+
+.logout-link {
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent; /* initially no red line */
+}
+
+.logout-link:hover {
+  background-color: #f8d7da; /* light red background */
+  border-left: 4px solid #c5071a; /* red rectangle (Bootstrap danger color) */
+}
+

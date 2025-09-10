@@ -81,7 +81,8 @@
     class="card-header bg-secondary d-flex justify-content-between align-items-center"
   >
     <h5 class="mb-0 text-white fw-bold">
-      <i class="bi bi-clock-history me-2"></i> Past Analyses
+      <!-- <i class="bi bi-clock-history me-2"></i> -->
+       Past Analyses
     </h5>
   </div>
   <div class="card-body">
@@ -110,8 +111,8 @@
           >
             <td class="fw-medium">{{ i + 1 + (page - 1) * itemsPerPage }}</td>
             <td class="fw-semibold">{{ analysis.pdfName }}</td>
-            <td>{{ analysis.start_time | date : "short" }}</td>
-            <td>{{ analysis.end_time | date : "short" }}</td>
+            <td>{{ analysis.start_time | date : "short" : "Asia/Kolkata" }}</td>
+            <td>{{ analysis.end_time | date : "short" : "Asia/Kolkata" }}</td>
             <td>
               {{ analysis.time_diff }}
               <ng-container

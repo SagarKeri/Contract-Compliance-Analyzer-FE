@@ -1,9 +1,9 @@
-<nav class="navbar navbar-expand-lg shadow custom-navbar bg-dark fixed-top">
+<nav class="navbar navbar-expand-lg shadow custom-navbar w-100">
   <div
     class="container-fluid d-flex align-items-center justify-content-between"
   >
     <!-- Logo -->
-    <div class="d-flex align-items-center">
+    <!-- <div class="d-flex align-items-center">
       <img
         src="../../../assets/images/csgLogo.png"
         alt="CSG Logo"
@@ -13,65 +13,58 @@
         style="background-color: white; cursor: pointer"
         (click)="goToAnalyze()"
       />
-    </div>
+    </div> -->
 
     <!-- Title -->
     <div class="mx-auto text-center">
-      <span class="navbar-brand text-white fw-bold">
+      <span class="navbar-brand text-secondary fw-bolder">
         Contract & Compliance Analyzer
       </span>
     </div>
 
     <!-- Dropdown -->
     <div class="dropdown" *ngIf="isLoggedIn">
-      <a
-        class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+      <!-- <a
+        class="d-flex align-items-center text-secondary text-decoration-none dropdown-toggle"
         href="#"
         id="userDropdown"
         role="button"
         data-bs-toggle="dropdown"
         aria-expanded="false"
+      > -->
+      <a
+        class="d-flex align-items-center text-secondary text-decoration-none"
+        role="button"
+        aria-expanded="false"
       >
-        <i class="bi bi-person-circle fs-3 me-2"></i>
-        <span class="fw-bold">{{ userName | titlecase }}</span
-        >&nbsp;
+        <i class="bi bi-person-circle fs-3 me-2 text-secondary"></i>
+        <span class="fw-bold text-secondary">{{ userName | titlecase }}</span>
       </a>
-      <ul
-        class="dropdown-menu dropdown-menu-end shadow primary"
-        aria-labelledby="userDropdown"
-      >
-        <!-- Admin link visible only for role_id = 1 -->
+      <!-- <ul class="dropdown-menu dropdown-menu-end shadow primary" aria-labelledby="userDropdown">
         <li>
-          <a
-            class="dropdown-item d-flex align-items-center text-secondary"
-            routerLink="/analyze"
-          >
+          <a class="dropdown-item d-flex align-items-center text-secondary" routerLink="/analyze">
             <i class="bi bi-clipboard-data-fill"></i>&nbsp; Analyzer
           </a>
         </li>
         <li *ngIf="isAdmin">
-          <a
-            class="dropdown-item d-flex align-items-center text-secondary"
-            routerLink="/admin"
-          >
+          <a class="dropdown-item d-flex align-items-center text-secondary" routerLink="/admin">
             <i class="bi bi-speedometer2 me-2"></i> Admin
           </a>
         </li>
         <li>
-          <a
-            class="dropdown-item d-flex align-items-center text-secondary"
-            style="cursor: pointer"
-            data-bs-toggle="modal"
-            data-bs-target="#logoutModal"
-          >
+          <a class="dropdown-item d-flex align-items-center text-secondary"
+             style="cursor: pointer"
+             data-bs-toggle="modal"
+             data-bs-target="#logoutModal">
             <i class="bi bi-box-arrow-right me-2"></i> Logout
           </a>
         </li>
-      </ul>
+      </ul> -->
     </div>
   </div>
 </nav>
 
+<!-- Logout Modal -->
 <div
   class="modal fade"
   id="logoutModal"

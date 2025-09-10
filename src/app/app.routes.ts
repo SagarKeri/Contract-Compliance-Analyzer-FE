@@ -34,35 +34,35 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
   },
   { path: 'my-analysis', component: PastAnalysisComponent },
-  {
-    path: 'admin',
-    component: AdminPersonaComponent,
-    canActivate: [AuthGuard],
-    data: { roles: [1] },
-    children: [
-      { path: 'country', component: IndexCountryComponent },
-      { path: 'add-country', component: CreateCountryComponent },
-      { path: 'view-country/:id', component: ViewCountryComponent },
-      { path: 'edit-country/:id', component: EditCountryComponent },
-      { path: 'domain', component: IndexDomainComponent },
-      { path: 'add-domain', component: CreateDomainComponent },
-      { path: 'view-domain/:id', component: ViewDomainComponent },
-      { path: 'edit-domain/:id', component: EditDomainComponent },
+  // {
+  //   path: 'admin',
+  //   component: AdminPersonaComponent,
+  //   canActivate: [AuthGuard],
+  //   data: { roles: [1] },
+  //   children: [
+      { path: 'country', component: IndexCountryComponent, canActivate: [AuthGuard],data: { roles: [1] }},
+      { path: 'add-country', component: CreateCountryComponent , canActivate: [AuthGuard],data: { roles: [1] }},
+      { path: 'view-country/:id', component: ViewCountryComponent , canActivate: [AuthGuard],data: { roles: [1] }},
+      { path: 'edit-country/:id', component: EditCountryComponent , canActivate: [AuthGuard],data: { roles: [1] }},
+      { path: 'domain', component: IndexDomainComponent , canActivate: [AuthGuard],data: { roles: [1] }},
+      { path: 'add-domain', component: CreateDomainComponent , canActivate: [AuthGuard],data: { roles: [1] }},
+      { path: 'view-domain/:id', component: ViewDomainComponent , canActivate: [AuthGuard],data: { roles: [1] }},
+      { path: 'edit-domain/:id', component: EditDomainComponent , canActivate: [AuthGuard],data: { roles: [1] }},
 
-      { path: 'compliance', component: IndexComplianceComponent },
-      { path: 'add-compliance', component: CreateComplianceComponent },
-      { path: 'view-compliance/:id', component: ViewComplianceComponent },
-      { path: 'edit-compliance/:id', component: EditComplianceComponent },
+      { path: 'compliance', component: IndexComplianceComponent , canActivate: [AuthGuard],data: { roles: [1] }},
+      { path: 'add-compliance', component: CreateComplianceComponent , canActivate: [AuthGuard],data: { roles: [1] }},
+      { path: 'view-compliance/:id', component: ViewComplianceComponent , canActivate: [AuthGuard],data: { roles: [1] }},
+      { path: 'edit-compliance/:id', component: EditComplianceComponent , canActivate: [AuthGuard],data: { roles: [1] }},
 
-      { path: 'clause', component: IndexClauseComponent },
-      { path: 'add-clause', component: CreateClauseComponent },
-      { path: 'view-clause/:id', component: ViewClauseComponent },
-      { path: 'edit-clause/:id', component: EditClauseComponent },
+      { path: 'clause', component: IndexClauseComponent , canActivate: [AuthGuard],data: { roles: [1] }},
+      { path: 'add-clause', component: CreateClauseComponent , canActivate: [AuthGuard],data: { roles: [1] }},
+      { path: 'view-clause/:id', component: ViewClauseComponent , canActivate: [AuthGuard],data: { roles: [1] }},
+      { path: 'edit-clause/:id', component: EditClauseComponent , canActivate: [AuthGuard],data: { roles: [1] }},
 
-      { path: 'user', component: UserIndexComponent },
+      { path: 'user', component: UserIndexComponent , canActivate: [AuthGuard],data: { roles: [1] }},
       { path: '', redirectTo: 'country', pathMatch: 'full' }, // default child
-    ],
-  },
+    //],
+  //},
 
   { path: '**', component: ErrorPageComponent }, // catch-all
 ];

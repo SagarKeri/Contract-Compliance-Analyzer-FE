@@ -111,37 +111,37 @@ export class LayoutComponent implements OnInit {
     this.spinnerService.show();
     this.feedbackMessages = {};
 
-    this.contractService
-      .analyzeContract(
-        this.selectedFile,
-        [],
-        this.selectedModel,
-        this.selectedCountry
-      )
-      .subscribe({
-        next: (response: any) => {
-          if (Array.isArray(response)) {
-            this.analysisResult = response;
-             this.feedbackSubmitted = false;
-            console.log(this.cacheKey);
-            this.toastr.success("Contract Successfully Analyzed.","Success!")
-          } else {
-            console.log(response);
-            this.analysisResult = response.analysis_result || [];
-            this.cacheKey = response.cache_key || null;
-            this.feedbackSubmitted = false;
-            console.log(this.cacheKey);
-            this.toastr.success("Contract Successfully Analyzed.","Success!")
-          }
-          this.spinnerService.hide();
-        },
-        error: (err) => {
-          this.toastr.error('Error analyzing contract: ' + err.message);
-          this.analysisResult = [];
-          this.cacheKey = null;
-          this.spinnerService.hide();
-        },
-      });
+    // this.contractService
+    //   .analyzeContract(
+    //     this.selectedFile,
+    //     [],
+    //     this.selectedModel,
+    //     this.selectedCountry
+    //   )
+    //   .subscribe({
+    //     next: (response: any) => {
+    //       if (Array.isArray(response)) {
+    //         this.analysisResult = response;
+    //          this.feedbackSubmitted = false;
+    //         console.log(this.cacheKey);
+    //         this.toastr.success("Contract Successfully Analyzed.","Success!")
+    //       } else {
+    //         console.log(response);
+    //         this.analysisResult = response.analysis_result || [];
+    //         this.cacheKey = response.cache_key || null;
+    //         this.feedbackSubmitted = false;
+    //         console.log(this.cacheKey);
+    //         this.toastr.success("Contract Successfully Analyzed.","Success!")
+    //       }
+    //       this.spinnerService.hide();
+    //     },
+    //     error: (err) => {
+    //       this.toastr.error('Error analyzing contract: ' + err.message);
+    //       this.analysisResult = [];
+    //       this.cacheKey = null;
+    //       this.spinnerService.hide();
+    //     },
+    //   });
   }
 
   loadComplete(event: any): void {

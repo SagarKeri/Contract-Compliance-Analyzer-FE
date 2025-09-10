@@ -40,15 +40,15 @@ export class IndexDomainComponent implements OnInit {
   }
 
   addDomain(): void {
-    this.router.navigate(['admin/add-domain']); // navigate to add-domain page
+    this.router.navigate(['add-domain']); // navigate to add-domain page
   }
 
   viewDomain(domain: Domain): void {
-    this.router.navigate(['admin/view-domain', domain._id]);
+    this.router.navigate(['view-domain', domain._id]);
   }
 
   editDomain(domain: Domain): void {
-    this.router.navigate(['admin/edit-domain', domain._id]);
+    this.router.navigate(['edit-domain', domain._id]);
   }
 
   deleteDomain(domainId: string): void {

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, effect } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterOutlet, RouterLink } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
@@ -40,8 +40,8 @@ import { ContractCache } from '../../Models/contract-cache-response';
     FormsModule,
     ContractGenieComponent,
     ClauseDetailsComponent,
-    RouterLink
-],
+    RouterLink,
+  ],
   templateUrl: './analyze-contract.component.html',
   styleUrl: './analyze-contract.component.css',
 })
@@ -71,7 +71,8 @@ export class AnalyzeContractComponent implements OnInit, OnDestroy {
   selectedClauseId: number = 0;
   selectAll: boolean = false;
   description: string = '';
-  isBackBtnEnable:boolean=false;
+  isBackBtnEnable: boolean = false;
+  isCachedAnalysis:boolean=false;
 
   constructor(
     private countryService: CountryService,
@@ -83,7 +84,8 @@ export class AnalyzeContractComponent implements OnInit, OnDestroy {
     private notificationService: PDFNotificationService,
     private appService: ApplicationServiceService,
     private contractCacheService: ContractCacheServiceService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private cdr: ChangeDetectorRef
   ) {
     // Wait for PDF.js initialization
     effect(() => {
@@ -105,98 +107,133 @@ export class AnalyzeContractComponent implements OnInit, OnDestroy {
         console.log('PDFViewerApplication not yet initialized');
       }
 
-      this.appService.file$
-        .subscribe((file) => {
-          this.selectedFile = file;
-          this.fileName = file ? file.name : '';
-          if (file) {
-            this.pdfSrc = URL.createObjectURL(file);
-          }
-        });
+      this.appService.file$.subscribe((file) => {
+        this.selectedFile = file;
+        this.fileName = file ? file.name : '';
+        if (file) {
+          this.pdfSrc = URL.createObjectURL(file);
+        }
+      });
     });
   }
 
   ngOnInit(): void {
-  this.loadCountries();
+    this.loadCountries();
 
-  this.route.queryParams.subscribe((params) => {
-    const cacheKey = params['cacheKey'];
-    if (cacheKey) {
-      this.loadCachedAnalysis(cacheKey);
-      this.downloadContract(cacheKey);
-    } else {
-      // 🔹 Reset UI when no cacheKey is provided
-      this.analysisResult = [];
-      this.description = '';
-      this.fileUploaded = false;
-      this.selectedFile = null;
-      this.selectedCountry=null;
-      this.selectedDomain=null;
-      this.pdfSrc = null;
-      this.cacheKey = null;
-      this.selectedClauses = [];
-      this.clauses =[];
-      this.clauses.forEach((c) => (c.selected = false));
-      this.selectAll = false;
-    }
-  });
-}
-
-
-  loadCachedAnalysis(cacheKey: string): void {
-    this.contractCacheService.getContractById(cacheKey).subscribe({
-      next: (response: any) => {
-        console.log(response);
-        this.isBackBtnEnable=true;
-        this.analysisResult = response.data.analysis.analysis || [];
-        this.description = response.data.analysis.description || '';
-        this.fileUploaded = true;
-        this.selectedFile = response.file || null;
-        this.selectedCountry = response.data.country_id;
-        if (this.selectedCountry) this.loadDomains(this.selectedCountry);
-        this.selectedDomain = response.data.domain_id;
-        this.loadClauses();
-        this.selectedClauses = response.data.clauses;
-        console.log('---------------------------------');
-        console.log(this.selectedClauses);
-        this.onSingleClauseChange();
-        //this.selectClausesByIds(response.data.clauses);
-        if (this.selectedFile) {
-          this.pdfSrc = URL.createObjectURL(this.selectedFile);
-        }
-        this.toastr.success('Loaded cached analysis', 'Success');
-      },
-      error: (err) => {
-        console.error(err);
-        this.toastr.error('Failed to load cached analysis');
-      },
+    this.route.queryParams.subscribe((params) => {
+      const cacheKey = params['cacheKey'];
+      if (cacheKey) {
+        this.loadCachedAnalysis(cacheKey);
+        this.downloadContract(cacheKey);
+        this.isCachedAnalysis=true;
+      } else {
+        // 🔹 Reset UI when no cacheKey is provided
+        this.analysisResult = [];
+        this.description = '';
+        this.fileUploaded = false;
+        this.selectedFile = null;
+        this.selectedCountry = null;
+        this.selectedDomain = null;
+        this.pdfSrc = null;
+        this.cacheKey = null;
+        this.selectedClauses = [];
+        this.clauses = [];
+        this.clauses.forEach((c) => (c.selected = false));
+        this.selectAll = false;
+        this.appService.file$.subscribe((file) => {
+      if (file) {
+        this.selectedFile = file;
+        this.fileName = file.name;
+        this.pdfSrc = URL.createObjectURL(file);
+        this.fileUploaded = false; // Reset until analysis
+      } else {
+        this.selectedFile = null;
+        this.fileName = '';
+        this.pdfSrc = null;
+        this.fileUploaded = false;
+      }
+    });
+      }
     });
   }
 
- downloadContract(cacheKey: string) {
-  this.contractCacheService.downloadContract(cacheKey).subscribe((response) => {
-    const contentDisposition = response.headers.get('content-disposition');
-    let fileName = 'unknown.pdf';
+  loadCachedAnalysis(cacheKey: string): void {
+  this.contractCacheService.getContractById(cacheKey).subscribe({
+    next: (response: any) => {
+      console.log('Cached analysis response:', response);
+      this.isBackBtnEnable = true;
+      this.analysisResult = response.data.analysis.analysis || [];
+      this.description = response.data.analysis.description || '';
+      this.fileUploaded = true;
+      this.selectedCountry = response.data.country_id;
+      this.selectedDomain = response.data.domain_id;
+      this.selectedClauses = response.data.clauses || [];
+      console.log('Selected Clauses from cache:', this.selectedClauses);
 
-    if (contentDisposition) {
-      const matches = /filename="?([^"]+)"?/.exec(contentDisposition);
-      if (matches?.[1]) {
-        fileName = matches[1];
+      // Load domains and clauses sequentially
+      if (this.selectedCountry) {
+        this.domainService.getDomainsByCountry(this.selectedCountry).subscribe({
+          next: (domains) => {
+            //this.domains = domains;
+            this.loadClauses(); // Load clauses after domains
+          },
+          error: (err) => {
+            console.error('Error fetching domains:', err);
+            this.toastr.error('Failed to load domains');
+          },
+        });
       }
-    }
 
-    this.selectedFile = new File([response.body!], fileName, {
-      type: 'application/pdf',
-    });
-
-    this.pdfSrc = URL.createObjectURL(this.selectedFile);
-    this.appService.setFile(this.selectedFile);
-
-    console.log('✅ Loaded file:', fileName);
+      this.downloadContract(cacheKey);
+      this.toastr.success('Loaded cached analysis', 'Success');
+    },
+    error: (err) => {
+      console.error('Error loading cached analysis:', err);
+      this.toastr.error('Failed to load cached analysis');
+    },
   });
 }
 
-ngOnDestroy(): void {
+  downloadContract(cacheKey: string) {
+    this.contractCacheService
+      .downloadContract(cacheKey)
+      .subscribe((response) => {
+        const contentDisposition = response.headers.get('content-disposition');
+        let fileName = 'unknown.pdf';
+
+        if (contentDisposition) {
+          const matches = /filename="?([^"]+)"?/.exec(contentDisposition);
+          if (matches?.[1]) {
+            fileName = matches[1];
+          }
+        }
+
+        this.selectedFile = new File([response.body!], fileName, {
+          type: 'application/pdf',
+        });
+
+        this.pdfSrc = URL.createObjectURL(this.selectedFile);
+        this.appService.setFile(this.selectedFile);
+
+        console.log('✅ Loaded file:', fileName);
+      });
+  }
+
+  removeFile(): void {
+    this.appService.clearFile(); // Clear file in the service
+    this.selectedFile = null; // Reset selected file
+    this.fileName = ''; // Reset file name
+    this.pdfSrc = null; // Reset PDF source
+    this.fileUploaded = false; // Reset file uploaded flag
+    this.analysisResult = []; // Clear analysis results
+    this.description = ''; // Clear description
+    this.feedbackSubmitted = false; // Reset feedback
+    const input = document.getElementById('contractUpload') as HTMLInputElement;
+    if (input) input.value = '';
+    this.toastr.info('File removed successfully.');
+  }
+
+  ngOnDestroy(): void {
     this.isBackBtnEnable = false;
   }
 
@@ -204,12 +241,21 @@ ngOnDestroy(): void {
     const input = event.target as HTMLInputElement;
     if (input?.files?.length) {
       const file = input.files[0];
+      if (file.type !== 'application/pdf') {
+        this.toastr.error('Please upload a valid PDF file.');
+        input.value = ''; // Clear the input
+        return;
+      }
       this.selectedFile = file;
       this.fileName = file.name;
+      this.pdfSrc = URL.createObjectURL(file);
+      this.fileUploaded = false; // Reset until analysis is performed
       this.pdfLoaded = false;
       this.pageRenderedbool = false;
-      this.pdfSrc = URL.createObjectURL(file);
-      this.appService.setFile(file);
+      this.appService.setFile(file); // Update service
+      this.toastr.success(`File "${file.name}" selected.`);
+    } else {
+      this.removeFile(); // Handle case where no file is selected
     }
   }
 
@@ -419,27 +465,32 @@ ngOnDestroy(): void {
   }[] = [];
   selectedClauses: number[] = [];
 
-  loadClauses(): void {
-    console.log(this.selectedCountry);
-    console.log(this.selectedDomain);
-    if (this.selectedCountry && this.selectedDomain) {
-      this.clauseService
-        .getClausesByCountryDomain(this.selectedCountry, this.selectedDomain)
-        .subscribe({
-          next: (data: any) => {
-            this.clauses = data;
-            this.selectedClauses = [];
-          },
-          error: (err) => {
-            console.error('Error fetching clauses', err);
-            this.toastr.error('Failed to load clauses');
-          },
-        });
-    } else {
-      this.clauses = [];
-      this.selectedClauses = [];
-    }
+ loadClauses(): void {
+  if (this.selectedCountry && this.selectedDomain) {
+    this.clauseService.getClausesByCountryDomain(this.selectedCountry, this.selectedDomain).subscribe({
+      next: (data: any) => {
+        this.clauses = data.map((clause: any) => ({
+          ...clause,
+          selected: this.selectedClauses.includes(clause._id), // Set selected state based on cached clauses
+        }));
+        console.log('Clauses after loading:', this.clauses);
+        this.selectAll = this.clauses.length > 0 && this.clauses.every((c) => c.selected);
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error fetching clauses:', err);
+        this.toastr.error('Failed to load clauses');
+        this.clauses = [];
+        this.selectedClauses = [];
+        this.cdr.detectChanges();
+      },
+    });
+  } else {
+    this.clauses = [];
+    this.selectedClauses = [];
+    this.cdr.detectChanges();
   }
+}
 
   onClauseChange(clauseId: number, event: any): void {
     if (event.target.checked) {
@@ -452,12 +503,14 @@ ngOnDestroy(): void {
   }
 
   restoreSelectedClauses(): void {
-    if (!this.selectedClauses || this.selectedClauses.length === 0) return;
-
-    this.clauses.forEach((clause) => {
-      clause.selected = this.selectedClauses.includes(clause._id);
-    });
-  }
+  if (!this.selectedClauses || this.selectedClauses.length === 0) return;
+  this.clauses.forEach((clause) => {
+    clause.selected = this.selectedClauses.includes(clause._id);
+  });
+  console.log('Clauses after restore:', this.clauses);
+  console.log('Selected Clauses:', this.selectedClauses);
+  this.cdr.detectChanges();
+}
 
   openClause(id: number): void {
     console.log(id);
@@ -485,21 +538,17 @@ ngOnDestroy(): void {
   }
 
   onSingleClauseChange(): void {
-    this.selectedClauses = this.clauses
-      .filter((c) => c.selected)
-      .map((c) => c._id);
-
-    this.selectAll =
-      this.clauses.length > 0 && this.clauses.every((c) => c.selected);
-  }
+  this.selectedClauses = this.clauses.filter((c) => c.selected).map((c) => c._id);
+  this.selectAll = this.clauses.length > 0 && this.clauses.every((c) => c.selected);
+  this.cdr.detectChanges();
+}
 
   toggleSelectAll(event: any): void {
-    this.selectAll = event.target.checked;
-
-    this.clauses.forEach((c) => (c.selected = this.selectAll));
-
-    this.selectedClauses = this.selectAll ? this.clauses.map((c) => c._id) : [];
-  }
+  this.selectAll = event.target.checked;
+  this.clauses.forEach((c) => (c.selected = this.selectAll));
+  this.selectedClauses = this.selectAll ? this.clauses.map((c) => c._id) : [];
+  this.cdr.detectChanges();
+}
 
   isFormValid(): boolean {
     return (
@@ -510,5 +559,4 @@ ngOnDestroy(): void {
       this.selectedClauses.length > 0
     );
   }
-
 }
