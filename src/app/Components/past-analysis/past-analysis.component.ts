@@ -19,17 +19,18 @@ export class PastAnalysisComponent implements OnInit {
   page: number = 1;
   itemsPerPage: number = 5;
 
-  // ✅ New counters for summary
+  // ✅ Counters for summary
   totalCount: number = 0;
   successCount: number = 0;
   failureCount: number = 0;
-activePanel: number | null = null;
+
+  activePanel: number | null = null;
 
   constructor(
     private pastAnalysisService: PastAnalysisServiceService,
     private router: Router,
     private contractcacheService: ContractCacheServiceService,
-    private toasterService:ToastrService
+    private toasterService: ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -43,10 +44,17 @@ activePanel: number | null = null;
   loadUserAnalysis(): void {
     this.pastAnalysisService.getUserAnalysis(this.userId).subscribe({
       next: (res) => {
-        this.analyses = (res.data || []).map((a: any) => ({
-          ...a,
-          time_diff: this.calculateTimeDiff(a.start_time, a.end_time),
-        }));
+        this.analyses = (res.data || []).map((a: any) => {
+          const startIST = this.convertToIST(a.start_time);
+          const endIST = this.convertToIST(a.end_time);
+
+          return {
+            ...a,
+            start_time: startIST,
+            end_time: endIST,
+            time_diff: this.calculateTimeDiff(startIST, endIST),
+          };
+        });
 
         // ✅ Update summary counts
         this.totalCount = this.analyses.length;
@@ -59,11 +67,17 @@ activePanel: number | null = null;
     });
   }
 
-  calculateTimeDiff(start: string, end: string): string {
+  // ✅ Convert UTC → IST
+  private convertToIST(dateString: string): Date {
+    if (!dateString) return new Date();
+    const date = new Date(dateString);
+    // Add +5:30 offset (19800000 ms)
+    return new Date(date.getTime() + (5 * 60 + 30) * 60000);
+  }
+
+  calculateTimeDiff(start: Date, end: Date): string {
     if (!start || !end) return '-';
-    const startDate = new Date(start);
-    const endDate = new Date(end);
-    const diffMs = endDate.getTime() - startDate.getTime();
+    const diffMs = end.getTime() - start.getTime();
     const diffSec = Math.floor(diffMs / 1000);
     const minutes = Math.floor(diffSec / 60);
     const seconds = diffSec % 60;
@@ -78,77 +92,83 @@ activePanel: number | null = null;
 
   viewAnalysis(cacheKey: string) {
     if (!cacheKey) return;
-
     this.router.navigate(['/analyze'], {
       queryParams: { cacheKey: cacheKey },
     });
   }
 
-downloadContractExcel(cacheId: string) {
-  if (!cacheId) {
-    console.error('No cacheId provided');
-    return;
-  }
+  downloadContractExcel(cacheId: string) {
+    if (!cacheId) {
+      console.error('No cacheId provided');
+      return;
+    }
 
-  this.contractcacheService.downloadReportContract(cacheId).subscribe({
-    next: (res) => {
-      // Log response for debugging
-      console.log('Response:', {
-        status: res.status,
-        headers: res.headers.get('Content-Type'),
-        body: res.body
-      });
-
-      // Check for JSON error response
-      if (res.body?.type === 'application/json') {
-        const reader = new FileReader();
-        reader.onload = () => {
-          try {
-            const error = JSON.parse(reader.result as string);
-            console.error('Server error:', error);
-          } catch (e) {
-            console.error('Failed to parse JSON error:', reader.result);
-          }
-        };
-        reader.readAsText(res.body);
-        return;
-      }
-
-      // Handle Excel download
-      if (res.body && res.headers.get('Content-Type')?.includes('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')) {
-        const blob = new Blob([res.body], {
-          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    this.contractcacheService.downloadReportContract(cacheId).subscribe({
+      next: (res) => {
+        console.log('Response:', {
+          status: res.status,
+          headers: res.headers.get('Content-Type'),
+          body: res.body,
         });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
 
-        const contentDisposition = res.headers.get('Content-Disposition');
-        let filename = 'contract_report.xlsx';
-        if (contentDisposition) {
-          const match = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
-          if (match && match[1]) filename = match[1].replace(/['"]/g, '');
+        if (res.body?.type === 'application/json') {
+          const reader = new FileReader();
+          reader.onload = () => {
+            try {
+              const error = JSON.parse(reader.result as string);
+              console.error('Server error:', error);
+            } catch (e) {
+              console.error('Failed to parse JSON error:', reader.result);
+            }
+          };
+          reader.readAsText(res.body);
+          return;
         }
 
-        a.download = filename;
-        a.click();
-        setTimeout(() => window.URL.revokeObjectURL(url), 100); 
-        this.toasterService.success("Report Downloaded Successfully!","Success")
-      } else {
-        console.error('Unexpected Content-Type:', res.headers.get('Content-Type'));
-        alert('Failed to download Excel: Invalid response format.');
-      }
-    },
-    error: (err) => {
-      console.error('Error downloading Excel:', err);
-      alert(`Failed to download Excel: ${err.message || 'Unknown error'}`);
-    }
-  });
-}
+        if (
+          res.body &&
+          res.headers
+            .get('Content-Type')
+            ?.includes(
+              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            )
+        ) {
+          const blob = new Blob([res.body], {
+            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          });
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
 
- setActive(panel: number) {
-    this.activePanel = this.activePanel === panel ? null : panel;
+          const contentDisposition = res.headers.get('Content-Disposition');
+          let filename = 'contract_report.xlsx';
+          if (contentDisposition) {
+            const match = contentDisposition.match(
+              /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/
+            );
+            if (match && match[1]) filename = match[1].replace(/['"]/g, '');
+          }
+
+          a.download = filename;
+          a.click();
+          setTimeout(() => window.URL.revokeObjectURL(url), 100);
+          this.toasterService.success('Report Downloaded Successfully!', 'Success');
+        } else {
+          console.error(
+            'Unexpected Content-Type:',
+            res.headers.get('Content-Type')
+          );
+          alert('Failed to download Excel: Invalid response format.');
+        }
+      },
+      error: (err) => {
+        console.error('Error downloading Excel:', err);
+        alert(`Failed to download Excel: ${err.message || 'Unknown error'}`);
+      },
+    });
   }
 
-
+  setActive(panel: number) {
+    this.activePanel = this.activePanel === panel ? null : panel;
+  }
 }

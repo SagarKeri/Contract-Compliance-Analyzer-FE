@@ -16,7 +16,8 @@
   box-shadow: 0px 8px 18px rgba(0, 0, 0, 0.2);
 }
 
-/* .gradient-bg-diagonal {
-  background: linear-gradient(135deg, #0f6368, #42b2b8);
-} */
+.gradient-bg {
+  background: linear-gradient(135deg, #0f6368, #15888d, #0a484c);
+}
+
 

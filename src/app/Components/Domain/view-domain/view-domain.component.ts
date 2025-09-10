@@ -24,7 +24,7 @@ export class ViewDomainComponent implements OnInit {
   ngOnInit(): void {
     const domainId = Number(this.route.snapshot.paramMap.get('id'));
     if (!domainId) {
-      this.router.navigate(['admin/domain']);
+      this.router.navigate(['domain']);
       return;
     }
 
@@ -36,12 +36,12 @@ export class ViewDomainComponent implements OnInit {
       error: (err) => {
         console.error('Error loading domain:', err);
         this.isLoading = false;
-        this.router.navigate(['admin/domain']);
+        this.router.navigate(['domain']);
       }
     });
   }
 
   goBack(): void {
-    this.router.navigate(['admin/domain']);
+    this.router.navigate(['domain']);
   }
 }

@@ -55,7 +55,7 @@ export class CreateClauseComponent implements OnInit {
     this.clauseService.createClause(clause).subscribe({
       next: () => {
         this.toastr.success('Clause added successfully', 'Success');
-        this.router.navigate(['admin/clause']);
+        this.router.navigate(['clause']);
       },
       error: (err) => {
         console.error(err);
@@ -66,7 +66,7 @@ export class CreateClauseComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['admin/clause']);
+    this.router.navigate(['clause']);
   }
 
 }

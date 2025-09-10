@@ -91,15 +91,15 @@ deleteUser(userId: string) {
 
 
   // addCountry(): void {
-  //   this.router.navigate(['admin/add-country']); // navigate to add-country page
+  //   this.router.navigate(['add-country']); // navigate to add-country page
   // }
 
   // viewCountry(country: Country): void {
-  //   this.router.navigate(['admin/view-country', country._id]);
+  //   this.router.navigate(['view-country', country._id]);
   // }
 
   // editCountry(country: Country): void {
-  //   this.router.navigate(['admin/edit-country', country._id]);
+  //   this.router.navigate(['edit-country', country._id]);
   // }
 
   // deleteCountry(country: Country): void {

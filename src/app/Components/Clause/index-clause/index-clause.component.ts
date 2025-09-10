@@ -61,15 +61,15 @@ export class IndexClauseComponent implements OnInit {
   }
 
   addCompliance(): void {
-    this.router.navigate(['admin/add-clause']);
+    this.router.navigate(['add-clause']);
   }
 
   editClause(id: string): void {
-    this.router.navigate(['admin/edit-clause', id]);
+    this.router.navigate(['edit-clause', id]);
   }
 
   viewClause(id: string): void {
-    this.router.navigate(['admin/view-clause', id]);
+    this.router.navigate(['view-clause', id]);
   }
 
 showConfirmDialog = false;
