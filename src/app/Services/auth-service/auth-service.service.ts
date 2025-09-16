@@ -3,28 +3,28 @@ import { Injectable } from '@angular/core';
 import { Observable, catchError, tap, throwError } from 'rxjs';
 import { TokenResponse } from '../../Models/loginResponse';
 import { UserCreate } from '../../Models/userCreate';
+import { environment } from '../../environments/environment';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthServiceService {
-
-  private apiUrl = 'http://localhost:8080'; // Adjust if your backend URL is different
+  private readonly apiBaseUrl = `${environment.apiBaseUrl}`;
 
   constructor(private http: HttpClient) {}
 
   signup(user: UserCreate): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>(`${this.apiUrl}/signup`, user).pipe(
-      catchError(this.handleError)
-    );
+    return this.http
+      .post<{ message: string }>(`${this.apiBaseUrl}/signup`, user)
+      .pipe(catchError(this.handleError));
   }
 
   login(email: string, password: string): Observable<TokenResponse> {
     const formData = new FormData();
     formData.append('username', email);
     formData.append('password', password);
-    return this.http.post<TokenResponse>(`${this.apiUrl}/login`, formData).pipe(
-      tap(response => {
+    return this.http.post<TokenResponse>(`${this.apiBaseUrl}/login`, formData).pipe(
+      tap((response) => {
         if (response.access_token) {
           localStorage.setItem('authToken', response.access_token);
         }
@@ -50,7 +50,9 @@ export class AuthServiceService {
     if (error.error instanceof ErrorEvent) {
       errorMessage = `Client-side error: ${error.error.message}`;
     } else {
-      errorMessage = `Server-side error: ${error.status} - ${error.error.detail || error.message}`;
+      errorMessage = `Server-side error: ${error.status} - ${
+        error.error.detail || error.message
+      }`;
     }
     return throwError(() => new Error(errorMessage));
   }

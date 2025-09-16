@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Country } from '../../Models/country';
+import { environment } from '../../environments/environment';
 
 
 @Injectable({
@@ -9,27 +10,27 @@ import { Country } from '../../Models/country';
 })
 export class CountryService {
 
-  private apiUrl = 'http://127.0.0.1:8080/countries';
+    private readonly apiBaseUrl = `${environment.apiBaseUrl}/countries`;
 
   constructor(private http: HttpClient) { }
 
   createCountry(country: Country): Observable<any> {
-    return this.http.post<any>(this.apiUrl, country);
+    return this.http.post<any>(this.apiBaseUrl, country);
   }
 
   getCountries(): Observable<Country[]> {
-    return this.http.get<Country[]>(this.apiUrl);
+    return this.http.get<Country[]>(this.apiBaseUrl);
   }
 
   getCountryById(id: number): Observable<Country> {
-    return this.http.get<Country>(`${this.apiUrl}/${id}`);
+    return this.http.get<Country>(`${this.apiBaseUrl}/${id}`);
   }
 
   updateCountry(id: number, country: Country): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/${id}`, country);
+    return this.http.put<any>(`${this.apiBaseUrl}/${id}`, country);
   }
 
   deleteCountry(id: string): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/${id}`);
+    return this.http.delete<any>(`${this.apiBaseUrl}/${id}`);
   }
 }

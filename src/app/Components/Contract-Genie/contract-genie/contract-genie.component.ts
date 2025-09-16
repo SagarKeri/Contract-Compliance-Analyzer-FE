@@ -207,4 +207,9 @@ export class ContractGenieComponent implements OnInit, AfterViewChecked {
       console.log('File uploaded:', file.name);
     }
   }
+
+  removeSelectedFile()
+  {
+    this.appService.clearFile();
+  }
 }

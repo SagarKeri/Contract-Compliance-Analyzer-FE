@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserServiceService {
-  private apiUrl = 'http://localhost:8080'; 
+  private readonly apiBaseUrl = environment.apiBaseUrl;
 
   constructor(private http: HttpClient) {}
 
@@ -20,7 +21,7 @@ export class UserServiceService {
 
   // Get all users
   getAllUsers(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/users`, {
+    return this.http.get(`${this.apiBaseUrl}/users`, {
       headers: this.getAuthHeaders()
     });
   }
@@ -28,14 +29,14 @@ export class UserServiceService {
   // Update user role
   updateUserRole(userId: string, roleId: number): Observable<any> {
     return this.http.put(
-      `${this.apiUrl}/users/update-role`,
+      `${this.apiBaseUrl}/users/update-role`,
       { user_id: userId, role_id: roleId },
       { headers: this.getAuthHeaders() }
     );
   }
 
   deleteUser(userId: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/users/${userId}`, {
+    return this.http.delete(`${this.apiBaseUrl}/users/${userId}`, {
       headers: this.getAuthHeaders()
     });
   }

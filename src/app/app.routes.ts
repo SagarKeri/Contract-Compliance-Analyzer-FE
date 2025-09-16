@@ -33,7 +33,7 @@ export const routes: Routes = [
     component: AnalyzeContractComponent,
     canActivate: [AuthGuard],
   },
-  { path: 'my-analysis', component: PastAnalysisComponent },
+  { path: 'my-analysis', component: PastAnalysisComponent,canActivate: [AuthGuard] },
   // {
   //   path: 'admin',
   //   component: AdminPersonaComponent,
