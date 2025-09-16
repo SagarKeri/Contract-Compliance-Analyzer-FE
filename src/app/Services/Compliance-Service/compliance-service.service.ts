@@ -2,33 +2,33 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Compliance } from '../../Models/compliance';
+import { environment } from '../../environments/environment';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ComplianceService {
+  private readonly apiBaseUrl = `${environment.apiBaseUrl}/compliances`;
 
-  private apiUrl = 'http://127.0.0.1:8080/compliances'; // Adjust endpoint as needed
-
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   createCompliance(compliance: Compliance): Observable<any> {
-    return this.http.post<any>(this.apiUrl, compliance);
+    return this.http.post<any>(this.apiBaseUrl, compliance);
   }
 
   getCompliances(): Observable<Compliance[]> {
-    return this.http.get<Compliance[]>(this.apiUrl);
+    return this.http.get<Compliance[]>(this.apiBaseUrl);
   }
 
   getComplianceById(id: number): Observable<Compliance[]> {
-    return this.http.get<Compliance[]>(`${this.apiUrl}/${id}`);
+    return this.http.get<Compliance[]>(`${this.apiBaseUrl}/${id}`);
   }
 
   updateCompliance(id: number, compliance: Compliance): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/${id}`, compliance);
+    return this.http.put<any>(`${this.apiBaseUrl}/${id}`, compliance);
   }
 
   deleteCompliance(id: number): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/${id}`);
+    return this.http.delete<any>(`${this.apiBaseUrl}/${id}`);
   }
 }

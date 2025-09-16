@@ -4,13 +4,14 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { ContractAnalysisResponse } from '../Models/contract-analysis-response.model';
 import { ApiResponse } from '../Models/ApiResponse.model';
+import { environment } from '../environments/environment';
+
 
 @Injectable({
   providedIn: 'root',
 })
 export class ContractAnalysisServiceService {
-  private readonly uploadApiUrl = 'http://localhost:8080/analyze-contract';
-  private readonly feedbackApiUrl = 'http://localhost:8080/feedback';
+  private readonly apiBaseUrl = environment.apiBaseUrl;
 
   constructor(private http: HttpClient) {}
 
@@ -34,7 +35,7 @@ export class ContractAnalysisServiceService {
     .post<
       | ApiResponse
       | { error: string; raw_output: string; cache_key: string }
-    >(this.uploadApiUrl, formData)
+    >(`${this.apiBaseUrl}/analyze-contract`, formData)
     .pipe(
       map((response) => {
         if ('error' in response) {
@@ -75,7 +76,7 @@ export class ContractAnalysisServiceService {
     };
 
     return this.http
-      .post(this.feedbackApiUrl, payload)
+      .post(`${this.apiBaseUrl}/feedback`, payload)
       .pipe(catchError(this.handleError));
   }
 

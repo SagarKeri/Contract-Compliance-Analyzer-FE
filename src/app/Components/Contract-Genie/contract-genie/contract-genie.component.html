@@ -4,14 +4,21 @@
 >
   <!-- File info header -->
   <div class="d-flex align-items-center border-bottom p-2 bg-light">
-    <i class="bi bi-pin-angle-fill text-danger me-2"></i>
-    <span
-      *ngIf="selectedFile; else noFile"
-      class="fw-semibold text-truncate"
-      style="max-width: 80%"
-    >
-      {{ selectedFile.name }}
-    </span>
+   <i class="bi bi-pin-angle-fill text-danger me-2"></i>
+
+<span
+  *ngIf="selectedFile; else noFile"
+  class="fw-semibold text-truncate d-inline-flex align-items-center"
+  style="max-width: 80%"
+>
+  {{ selectedFile.name }}
+  <i
+    class="bi bi-x-circle-fill text-secondary ms-2"
+    role="button"
+    (click)="removeSelectedFile()"
+  ></i>
+</span>
+
 
     <ng-template #noFile>
       <div class="d-flex align-items-center p-1">
